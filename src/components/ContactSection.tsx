@@ -1,6 +1,24 @@
 import { motion, useInView } from "framer-motion";
 import { useRef, useState } from "react";
-import { Send, MapPin, Phone, Mail } from "lucide-react";
+import { Phone, Mail, MapPin, Clock, ExternalLink } from "lucide-react";
+
+const offices = [
+  {
+    label: "Head Office (Mira Road)",
+    address: "103, Laxmi Classic CHS Ltd., Near Park View Hotel, Laxmi Park, Kanakia Road, Mira Road (E), Thane – 401105",
+    mapQuery: "Laxmi+Classic+CHS+Ltd+Laxmi+Park+103+Kanakia+Rd+Mira+Road+East+Thane+Maharashtra+401105",
+  },
+  {
+    label: "Branch (Dadar)",
+    address: "4, Prabhadevi Building (Dolly House), Khed Galli, Sayani Road, Dadar (W), Mumbai – 400025",
+    mapQuery: "Prabhadevi+Building+Khed+Galli+Sayani+Road+Dadar+Mumbai+400025",
+  },
+  {
+    label: "Branch (Fort)",
+    address: "102, Parikh Mansion, Near Pratap Lunch Home, Janmabhoomi Marg, Fort, Mumbai – 400001",
+    mapQuery: "Parikh+Mansion+Janmabhoomi+Marg+Fort+Mumbai+400001",
+  },
+];
 
 const ContactSection = () => {
   const ref = useRef<HTMLDivElement>(null);
@@ -8,62 +26,42 @@ const ContactSection = () => {
   const [submitted, setSubmitted] = useState(false);
 
   return (
-    <section id="contact" ref={ref} className="relative py-32">
-      <div className="absolute inset-0 bg-gradient-to-t from-charcoal-light via-background to-background" />
-
-      <div className="container relative z-10">
+    <section id="contact" ref={ref} className="py-24 md:py-32 bg-background">
+      <div className="max-w-6xl mx-auto px-6">
         <motion.div
-          initial={{ opacity: 0, y: 40 }}
+          initial={{ opacity: 0, y: 30 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.8 }}
-          className="text-center mb-20 space-y-6"
+          className="text-center mb-16"
         >
-          <span className="chapter-number">Chapter 06</span>
-          <h2 className="section-title">
-            Begin Your <span className="text-gradient-gold">Case</span>
+          <p className="text-primary font-body text-sm uppercase tracking-[0.3em] mb-4">
+            Get in Touch
+          </p>
+          <h2 className="font-display text-4xl md:text-5xl font-bold text-foreground mb-4">
+            Free Consultation
           </h2>
-          <div className="divider-gold mx-auto" />
+          <div className="w-24 h-[2px] bg-gradient-to-r from-primary to-primary/40 mx-auto mb-6" />
+          <p className="font-body text-muted-foreground max-w-lg mx-auto">
+            Every great case begins with a conversation. Reach out today and let us fight for what's right.
+          </p>
         </motion.div>
 
-        <div className="grid lg:grid-cols-2 gap-12 max-w-5xl mx-auto">
-          {/* Contact Info */}
-          <motion.div
-            initial={{ opacity: 0, x: -30 }}
-            animate={inView ? { opacity: 1, x: 0 } : {}}
-            transition={{ duration: 0.6, delay: 0.3 }}
-            className="space-y-8"
-          >
-            <p className="font-serif text-2xl italic text-foreground/80 leading-relaxed">
-              "Every victory begins with a conversation. Every conversation 
-              begins with trust."
-            </p>
-            <div className="divider-gold" />
-            <div className="space-y-6">
-              {[
-                { icon: MapPin, text: "One Liberty Plaza, New York, NY 10006" },
-                { icon: Phone, text: "+1 (212) 555-0190" },
-                { icon: Mail, text: "counsel@aurumvale.com" },
-              ].map((item) => (
-                <div key={item.text} className="flex items-center gap-4 text-muted-foreground">
-                  <item.icon className="w-5 h-5 text-primary/60 shrink-0" />
-                  <span className="font-body text-sm">{item.text}</span>
-                </div>
-              ))}
-            </div>
-          </motion.div>
-
+        <div className="grid md:grid-cols-2 gap-12">
           {/* Form */}
           <motion.form
-            initial={{ opacity: 0, x: 30 }}
-            animate={inView ? { opacity: 1, x: 0 } : {}}
-            transition={{ duration: 0.6, delay: 0.4 }}
-            onSubmit={(e) => { e.preventDefault(); setSubmitted(true); }}
-            className="glass-panel-gold p-8 space-y-6"
+            initial={{ opacity: 0, y: 20 }}
+            animate={inView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            onSubmit={(e) => {
+              e.preventDefault();
+              setSubmitted(true);
+            }}
+            className="space-y-5"
           >
             {submitted ? (
-              <div className="flex flex-col items-center justify-center h-full py-12 space-y-4">
+              <div className="flex flex-col items-center justify-center py-16 space-y-4">
                 <div className="w-16 h-16 rounded-full bg-primary/20 flex items-center justify-center">
-                  <Send className="w-6 h-6 text-primary" />
+                  <Mail className="w-6 h-6 text-primary" />
                 </div>
                 <p className="font-display text-xl text-foreground">Thank you.</p>
                 <p className="text-muted-foreground text-sm text-center">
@@ -72,40 +70,105 @@ const ContactSection = () => {
               </div>
             ) : (
               <>
-                {[
-                  { label: "Full Name", type: "text", placeholder: "Victoria Ashworth" },
-                  { label: "Email", type: "email", placeholder: "v.ashworth@example.com" },
-                  { label: "Phone", type: "tel", placeholder: "+1 (212) 555-0190" },
-                ].map((field) => (
-                  <div key={field.label} className="space-y-2">
-                    <label className="stat-label">{field.label}</label>
-                    <input
-                      type={field.type}
-                      placeholder={field.placeholder}
-                      required
-                      className="w-full bg-background/50 border border-border/50 rounded-sm px-4 py-3 
-                                 text-foreground font-body text-sm placeholder:text-muted-foreground/50
-                                 focus:outline-none focus:border-primary/50 transition-colors duration-300"
-                    />
-                  </div>
-                ))}
-                <div className="space-y-2">
-                  <label className="stat-label">Nature of Inquiry</label>
-                  <textarea
-                    rows={3}
-                    placeholder="Brief description of your legal matter..."
-                    className="w-full bg-background/50 border border-border/50 rounded-sm px-4 py-3 
-                               text-foreground font-body text-sm placeholder:text-muted-foreground/50
-                               focus:outline-none focus:border-primary/50 transition-colors duration-300 resize-none"
+                <div className="grid grid-cols-2 gap-4">
+                  <input
+                    type="text"
+                    placeholder="First Name"
+                    required
+                    className="w-full px-4 py-3 border border-border bg-card text-card-foreground font-body text-sm placeholder:text-muted-foreground focus:outline-none focus:border-primary transition-colors"
+                  />
+                  <input
+                    type="text"
+                    placeholder="Last Name"
+                    required
+                    className="w-full px-4 py-3 border border-border bg-card text-card-foreground font-body text-sm placeholder:text-muted-foreground focus:outline-none focus:border-primary transition-colors"
                   />
                 </div>
-                <button type="submit" className="cta-primary w-full justify-center">
-                  <Send className="w-4 h-4" />
-                  Submit Inquiry
+                <input
+                  type="email"
+                  placeholder="Email Address"
+                  required
+                  className="w-full px-4 py-3 border border-border bg-card text-card-foreground font-body text-sm placeholder:text-muted-foreground focus:outline-none focus:border-primary transition-colors"
+                />
+                <input
+                  type="tel"
+                  placeholder="Phone Number"
+                  required
+                  className="w-full px-4 py-3 border border-border bg-card text-card-foreground font-body text-sm placeholder:text-muted-foreground focus:outline-none focus:border-primary transition-colors"
+                />
+                <textarea
+                  rows={5}
+                  placeholder="Describe your legal matter..."
+                  className="w-full px-4 py-3 border border-border bg-card text-card-foreground font-body text-sm placeholder:text-muted-foreground focus:outline-none focus:border-primary transition-colors resize-none"
+                />
+                <button
+                  type="submit"
+                  className="w-full py-3.5 bg-primary text-primary-foreground font-body font-semibold text-sm uppercase tracking-[0.15em] transition-all duration-300 hover:bg-[hsl(var(--gold-light))]"
+                >
+                  Request Consultation
                 </button>
               </>
             )}
           </motion.form>
+
+          {/* Contact info */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={inView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.6, delay: 0.3 }}
+            className="space-y-8"
+          >
+            <div className="flex gap-4">
+              <Phone className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+              <div>
+                <p className="font-body text-xs uppercase tracking-[0.2em] text-muted-foreground mb-1">Call Us</p>
+                <p className="font-body text-foreground text-sm">
+                  9223438655 / 9967713812 / 9220473363
+                </p>
+              </div>
+            </div>
+
+            <div className="flex gap-4">
+              <Mail className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+              <div>
+                <p className="font-body text-xs uppercase tracking-[0.2em] text-muted-foreground mb-1">Email</p>
+                <a href="mailto:bnslegal01@gmail.com" className="font-body text-foreground text-sm hover:text-primary transition-colors">
+                  bnslegal01@gmail.com
+                </a>
+              </div>
+            </div>
+
+            {offices.map((office) => (
+              <div key={office.label} className="flex gap-4">
+                <MapPin className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                <div>
+                  <p className="font-body text-xs uppercase tracking-[0.2em] text-muted-foreground mb-1">
+                    {office.label}
+                  </p>
+                  <p className="font-body text-foreground text-sm">{office.address}</p>
+                  <a
+                    href={`https://www.google.com/maps/search/?api=1&query=${office.mapQuery}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 mt-2 font-body text-xs text-primary hover:text-primary/80 uppercase tracking-[0.15em] transition-colors"
+                  >
+                    <ExternalLink className="w-3 h-3" />
+                    Open in Maps
+                  </a>
+                </div>
+              </div>
+            ))}
+
+            <div className="flex gap-4">
+              <Clock className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+              <div>
+                <p className="font-body text-xs uppercase tracking-[0.2em] text-muted-foreground mb-1">Hours</p>
+                <p className="font-body text-foreground text-sm whitespace-pre-line">
+                  Mon – Sat: 9:00 AM – 7:00 PM{"\n"}24/7 Emergency Line Available
+                </p>
+              </div>
+            </div>
+          </motion.div>
         </div>
       </div>
     </section>

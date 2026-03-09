@@ -1,6 +1,5 @@
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
-import { ArrowDown } from "lucide-react";
 import justiceStatue from "@/assets/justice-statue.png";
 
 const HeroSection = () => {
@@ -10,106 +9,119 @@ const HeroSection = () => {
     offset: ["start start", "end start"],
   });
 
-  const statueY = useTransform(scrollYProgress, [0, 1], [0, -80]);
-  const statueRotate = useTransform(scrollYProgress, [0, 1], [0, -8]);
-  const statueScale = useTransform(scrollYProgress, [0, 1], [1, 1.05]);
-  const textY = useTransform(scrollYProgress, [0, 1], [0, 60]);
   const opacity = useTransform(scrollYProgress, [0, 0.6], [1, 0]);
+  const scrollLineY = useTransform(scrollYProgress, [0, 1], [0, 8]);
 
   return (
-    <section ref={ref} className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      {/* Background gradient */}
-      <div className="absolute inset-0 bg-gradient-to-b from-background via-background to-charcoal-light" />
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,hsl(var(--gold)/0.05)_0%,transparent_70%)]" />
+    <section
+      ref={ref}
+      className="relative min-h-screen flex items-end overflow-hidden"
+      style={{
+        background: "linear-gradient(135deg, hsl(220 20% 6%) 0%, hsl(220 15% 14%) 50%, hsl(220 12% 20%) 100%)",
+      }}
+    >
+      {/* Dark overlays */}
+      <div
+        className="absolute inset-0 z-10 pointer-events-none"
+        style={{
+          background: "linear-gradient(transparent 0%, rgba(0,0,0,0.15) 40%, rgba(0,0,0,0.6) 75%, hsl(220 20% 6%) 100%)",
+        }}
+      />
+      <div
+        className="absolute top-0 left-0 w-1/2 h-full z-10 pointer-events-none"
+        style={{
+          background: "linear-gradient(90deg, hsl(220 20% 6% / 0.7) 0%, transparent 100%)",
+        }}
+      />
 
-      <div className="container relative z-10 grid lg:grid-cols-2 gap-12 items-center pt-24">
-        {/* Left: Text */}
-        <motion.div style={{ y: textY, opacity }} className="space-y-8">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-          >
-            <span className="chapter-number">Est. 1987 — Chapter 01</span>
-          </motion.div>
-
-          <motion.h1
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-            className="section-title"
-          >
-            Beyond
-            <br />
-            <span className="text-gradient-gold">Justice</span>
-          </motion.h1>
-
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.6 }}
-            className="divider-gold"
+      {/* Background image */}
+      <div className="absolute inset-0 flex items-center justify-center">
+        <motion.div className="w-full h-full" style={{ opacity }}>
+          <img
+            src={justiceStatue}
+            alt="Lady Justice statue in bronze, blindfolded, holding scales and sword"
+            className="w-full h-full object-cover brightness-110 contrast-110 saturate-110"
           />
-
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.7 }}
-            className="section-subtitle"
-          >
-            Where precision meets advocacy. We engineer legal outcomes with the 
-            same relentless pursuit of excellence that defines the world's most 
-            elite performers.
-          </motion.p>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.9 }}
-            className="flex flex-wrap gap-4"
-          >
-            <a href="#contact" className="cta-primary">
-              Request Consultation
-            </a>
-            <a href="#firm" className="cta-glass">
-              Explore Our Story
-            </a>
-          </motion.div>
-        </motion.div>
-
-        {/* Right: Statue */}
-        <motion.div
-          style={{ y: statueY, rotateX: statueRotate, scale: statueScale }}
-          className="relative perspective-1000 flex justify-center"
-        >
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 1.2, delay: 0.3 }}
-            className="relative"
-          >
-            <div className="absolute -inset-8 bg-[radial-gradient(ellipse_at_center,hsl(var(--gold)/0.12)_0%,transparent_70%)] animate-gold-pulse" />
-            <img
-              src={justiceStatue}
-              alt="Lady Justice — symbol of fairness, law, and authority"
-              className="relative w-full max-w-md mx-auto drop-shadow-2xl"
-            />
-          </motion.div>
         </motion.div>
       </div>
 
-      {/* Scroll indicator */}
+      {/* Text content - bottom left */}
+      <div className="relative z-20 px-8 md:px-16 pb-24 md:pb-32 max-w-2xl">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.2 }}
+        >
+          <p className="font-body text-primary tracking-[0.35em] uppercase text-xs mb-5 drop-shadow-lg">
+            Established 1988
+          </p>
+        </motion.div>
+
+        <motion.h1
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.4 }}
+          className="font-display text-6xl md:text-8xl lg:text-9xl font-bold leading-[0.9] mb-4 text-primary drop-shadow-2xl"
+        >
+          BNS
+          <br />
+          <span className="text-gradient-gold italic font-serif">Legal</span>
+        </motion.h1>
+
+        <motion.div
+          initial={{ scaleX: 0 }}
+          animate={{ scaleX: 1 }}
+          transition={{ duration: 0.8, delay: 0.6 }}
+          className="w-24 h-[2px] bg-gradient-to-r from-primary to-primary/40 mb-5 origin-left"
+        />
+
+        <motion.p
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.8, delay: 0.7 }}
+          className="font-body text-lg md:text-xl max-w-md mb-10 font-light tracking-wide leading-relaxed text-foreground/85 drop-shadow-lg"
+        >
+          Relentless advocacy. Unwavering integrity.
+          <br />
+          Justice is not just our practice — it's our promise.
+        </motion.p>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.9 }}
+          className="flex flex-col sm:flex-row gap-4"
+        >
+          <a
+            href="#contact"
+            className="inline-block px-8 py-3.5 bg-primary text-primary-foreground font-body font-semibold text-sm uppercase tracking-[0.15em] transition-all duration-300 hover:bg-[hsl(var(--gold-light))] hover:shadow-lg hover:shadow-primary/20"
+          >
+            Schedule a Consultation
+          </a>
+          <a
+            href="#practice"
+            className="inline-block px-8 py-3.5 border border-primary/50 text-primary font-body text-sm uppercase tracking-[0.15em] transition-all duration-300 hover:border-primary hover:bg-primary/10"
+          >
+            Our Practice Areas
+          </a>
+        </motion.div>
+      </div>
+
+      {/* Scroll indicator - bottom right */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 1.5 }}
         style={{ opacity }}
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
+        className="absolute bottom-8 right-8 z-20 flex flex-col items-center gap-2"
       >
-        <span className="font-mono text-xs tracking-[0.3em] uppercase text-muted-foreground">
-          Scroll to Explore
+        <span className="text-primary/50 text-xs font-body uppercase tracking-[0.2em]">
+          Scroll
         </span>
-        <ArrowDown className="w-4 h-4 text-primary animate-float" />
+        <motion.div
+          style={{ y: scrollLineY }}
+          className="w-px h-8 bg-gradient-to-b from-primary/60 to-transparent"
+        />
       </motion.div>
     </section>
   );

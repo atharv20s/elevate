@@ -1,22 +1,22 @@
 import Navbar from "@/components/Navbar";
 import HeroSection from "@/components/HeroSection";
-import FirmSection from "@/components/FirmSection";
 import PracticeSection from "@/components/PracticeSection";
-import ResultsSection from "@/components/ResultsSection";
+import FirmSection from "@/components/FirmSection";
 import TeamSection from "@/components/TeamSection";
 import ContactSection from "@/components/ContactSection";
 import Footer from "@/components/Footer";
+import ChatButton from "@/components/ChatButton";
 
 const Index = () => (
-  <div className="min-h-screen bg-background">
+  <div className="min-h-screen">
     <Navbar />
     <HeroSection />
-    <FirmSection />
     <PracticeSection />
-    <ResultsSection />
+    <FirmSection />
     <TeamSection />
     <ContactSection />
     <Footer />
+    <ChatButton />
   </div>
 );
 
