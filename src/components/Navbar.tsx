@@ -3,9 +3,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Scale, Menu, X } from "lucide-react";
 
 const navItems = [
-  { label: "The Firm", href: "#firm" },
   { label: "Practice", href: "#practice" },
-  { label: "Results", href: "#results" },
+  { label: "About", href: "#firm" },
   { label: "Team", href: "#team" },
   { label: "Contact", href: "#contact" },
 ];
@@ -27,28 +26,37 @@ const Navbar = () => {
         animate={{ y: 0 }}
         transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-          scrolled ? "glass-panel border-b border-border/30 py-4" : "py-6"
+          scrolled
+            ? "bg-background/90 backdrop-blur-xl border-b border-border/30 py-4"
+            : "py-6"
         }`}
       >
-        <div className="container flex items-center justify-between">
+        <div className="max-w-6xl mx-auto px-6 flex items-center justify-between">
           <a href="#" className="flex items-center gap-3 group">
             <Scale className="w-6 h-6 text-primary transition-transform duration-300 group-hover:rotate-12" />
-            <span className="font-display text-lg tracking-[0.2em] uppercase text-foreground">
-              Aurum<span className="text-primary">&</span>Vale
+            <span className="font-display text-lg tracking-[0.15em] uppercase text-foreground">
+              BNS<span className="text-primary"> Legal</span>
             </span>
           </a>
 
           <nav className="hidden md:flex items-center gap-8">
             {navItems.map((item) => (
-              <a key={item.label} href={item.href} className="nav-link">
+              <a
+                key={item.label}
+                href={item.href}
+                className="font-body text-sm tracking-[0.1em] uppercase text-muted-foreground hover:text-foreground transition-colors duration-300"
+              >
                 {item.label}
               </a>
             ))}
           </nav>
 
           <div className="hidden md:block">
-            <a href="#contact" className="cta-primary text-xs">
-              Request Consultation
+            <a
+              href="#contact"
+              className="px-6 py-2.5 bg-primary text-primary-foreground font-body text-xs font-semibold uppercase tracking-[0.15em] transition-all duration-300 hover:bg-[hsl(var(--gold-light))]"
+            >
+              Consultation
             </a>
           </div>
 
@@ -89,7 +97,11 @@ const Navbar = () => {
                   {item.label}
                 </motion.a>
               ))}
-              <a href="#contact" onClick={() => setMobileOpen(false)} className="cta-primary mt-4">
+              <a
+                href="#contact"
+                onClick={() => setMobileOpen(false)}
+                className="mt-4 px-8 py-3 bg-primary text-primary-foreground font-body text-sm uppercase tracking-[0.15em]"
+              >
                 Consultation
               </a>
             </nav>

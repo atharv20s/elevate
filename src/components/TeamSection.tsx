@@ -1,11 +1,14 @@
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
+import { Phone } from "lucide-react";
 
 const team = [
-  { name: "Victoria Ashworth", role: "Managing Partner", specialty: "Complex Litigation" },
-  { name: "Marcus Chen", role: "Senior Partner", specialty: "Corporate M&A" },
-  { name: "Elena Vasquez", role: "Partner", specialty: "Regulatory Defense" },
-  { name: "James Blackwood", role: "Partner", specialty: "Intellectual Property" },
+  { name: "Shri B. N. Shukla", role: "Senior Partner & Founder", qualifications: "B.A., LL.B.", specialty: "Civil, Society & Rent Control Law", phone: "9223438655", since: "1988" },
+  { name: "Shri Deepak Shukla", role: "Partner", qualifications: "B.L.S., LL.B., LL.M.", specialty: "Civil, Arbitration, DRT, High Court, NCLT, RERA", phone: "9967713812" },
+  { name: "Shri Sandeep Shukla", role: "Partner", qualifications: "B.L.S., LL.B., LL.M.", specialty: "Civil, Criminal, Family, Consumer & Co-operative Laws", phone: "9220473363" },
+  { name: "Ms. Neelam S. Shukla", role: "Partner", qualifications: "B.C.A., M.A., LL.B., LL.M.", specialty: "Criminal, Civil, Family & Women's Rights", phone: "9479256501" },
+  { name: "Shri Vinayak Shukla", role: "Advocate", qualifications: "B.L.S., LL.B.", specialty: "Civil, Criminal, High Court & Co-operative Courts", phone: "8655890872" },
+  { name: "Shri Shivprasad Pathak", role: "Advocate", qualifications: "B.A., LL.B.", specialty: "Civil & Criminal Practice — City Civil, Sessions & High Courts", phone: "9867289818" },
 ];
 
 const TeamSection = () => {
@@ -13,59 +16,76 @@ const TeamSection = () => {
   const inView = useInView(ref, { once: true, margin: "-100px" });
 
   return (
-    <section id="team" ref={ref} className="relative py-32">
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,hsl(var(--gold)/0.04)_0%,transparent_60%)]" />
-
-      <div className="container relative z-10">
+    <section id="team" ref={ref} className="py-24 md:py-32 bg-background">
+      <div className="max-w-6xl mx-auto px-6">
         <motion.div
-          initial={{ opacity: 0, y: 40 }}
+          initial={{ opacity: 0, y: 30 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.8 }}
-          className="text-center mb-20 space-y-6"
+          className="text-center mb-16"
         >
-          <span className="chapter-number">Chapter 05</span>
-          <h2 className="section-title">
-            The <span className="text-gradient-gold">Counsel</span>
+          <p className="text-[hsl(var(--gold-dark))] font-body text-sm uppercase tracking-[0.3em] mb-4">
+            Our Counsel
+          </p>
+          <h2 className="font-display text-4xl md:text-5xl font-bold text-foreground mb-4">
+            Meet Our Team
           </h2>
-          <div className="divider-gold mx-auto" />
-          <p className="section-subtitle mx-auto">
-            The minds behind the strategy. Each partner brings decades of 
-            specialized experience to every engagement.
+          <div className="w-24 h-[2px] bg-gradient-to-r from-primary to-primary/40 mx-auto mb-6" />
+          <p className="font-body text-muted-foreground max-w-lg mx-auto">
+            The minds behind the strategy. Each member brings specialized experience and unwavering dedication.
           </p>
         </motion.div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {team.map((member, i) => (
             <motion.div
               key={member.name}
               initial={{ opacity: 0, y: 30 }}
               animate={inView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.5, delay: 0.3 + i * 0.12 }}
-              className="glass-panel overflow-hidden group"
+              transition={{ duration: 0.5, delay: 0.1 + i * 0.1 }}
+              className="group p-6 border border-border bg-card hover:border-primary/40 transition-all duration-500"
             >
-              {/* Placeholder portrait area */}
-              <div className="aspect-[3/4] bg-gradient-to-b from-charcoal-medium to-background relative overflow-hidden">
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <span className="font-display text-6xl font-bold text-primary/10 group-hover:text-primary/20 transition-colors duration-500">
-                    {member.name.split(" ").map(n => n[0]).join("")}
-                  </span>
-                </div>
-                <div className="absolute bottom-0 left-0 right-0 h-1/3 bg-gradient-to-t from-card to-transparent" />
+              {/* Initials avatar */}
+              <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">
+                <span className="font-display text-lg font-bold text-primary">
+                  {member.name.split(" ").filter(n => n.length > 1).map(n => n[0]).join("").slice(0, 2)}
+                </span>
               </div>
-              <div className="p-6 space-y-1">
-                <h3 className="font-display text-lg font-semibold text-foreground">
-                  {member.name}
-                </h3>
-                <p className="font-mono text-xs tracking-wider text-primary uppercase">
-                  {member.role}
-                </p>
-                <p className="text-muted-foreground text-sm">
-                  {member.specialty}
-                </p>
-              </div>
+
+              <h3 className="font-display text-lg font-semibold text-card-foreground mb-1">
+                {member.name}
+              </h3>
+              <p className="font-body text-primary text-xs uppercase tracking-wider mb-1">
+                {member.role}
+              </p>
+              <p className="font-mono text-xs text-muted-foreground mb-2">
+                {member.qualifications}
+              </p>
+              <p className="font-body text-muted-foreground text-sm leading-relaxed mb-3">
+                {member.specialty}
+              </p>
+              <a
+                href={`tel:${member.phone}`}
+                className="inline-flex items-center gap-2 text-xs text-primary/70 hover:text-primary transition-colors"
+              >
+                <Phone className="w-3 h-3" />
+                <span className="font-mono">{member.phone}</span>
+              </a>
             </motion.div>
           ))}
         </div>
+
+        {/* Associate advocates note */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.5, delay: 0.8 }}
+          className="mt-8 p-6 border border-border bg-card text-center"
+        >
+          <p className="font-body text-muted-foreground text-sm">
+            <span className="text-primary font-semibold">+ 4 Associate Advocates</span> practicing across Mumbai, Thane & Navi Mumbai — handling drafting, research, and trial advocacy in Civil, Criminal, Consumer, RERA & Tribunal matters.
+          </p>
+        </motion.div>
       </div>
     </section>
   );
