@@ -1,6 +1,8 @@
 import { motion, useInView } from "framer-motion";
 import { useRef, useState } from "react";
 import { Phone, Mail, MapPin, Clock, ExternalLink } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 const offices = [
   {
@@ -24,6 +26,36 @@ const ContactSection = () => {
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: true, margin: "-100px" });
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setLoading(true);
+
+    const formData = new FormData(e.currentTarget);
+    const data = {
+      firstName: formData.get("firstName") as string,
+      lastName: formData.get("lastName") as string,
+      email: formData.get("email") as string,
+      phone: formData.get("phone") as string,
+      message: formData.get("message") as string,
+    };
+
+    try {
+      const { data: result, error } = await supabase.functions.invoke("send-notification", {
+        body: { type: "consultation", data },
+      });
+
+      if (error) throw error;
+      setSubmitted(true);
+      toast.success("Consultation request submitted successfully!");
+    } catch (err) {
+      console.error("Submit error:", err);
+      toast.error("Failed to submit. Please try again or call us directly.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <section id="contact" ref={ref} className="py-24 md:py-32 bg-background">
@@ -52,10 +84,7 @@ const ContactSection = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={inView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.6, delay: 0.2 }}
-            onSubmit={(e) => {
-              e.preventDefault();
-              setSubmitted(true);
-            }}
+            onSubmit={handleSubmit}
             className="space-y-5"
           >
             {submitted ? (
@@ -71,41 +100,20 @@ const ContactSection = () => {
             ) : (
               <>
                 <div className="grid grid-cols-2 gap-4">
-                  <input
-                    type="text"
-                    placeholder="First Name"
-                    required
-                    className="w-full px-4 py-3 border border-border bg-card text-card-foreground font-body text-sm placeholder:text-muted-foreground focus:outline-none focus:border-primary transition-colors"
-                  />
-                  <input
-                    type="text"
-                    placeholder="Last Name"
-                    required
-                    className="w-full px-4 py-3 border border-border bg-card text-card-foreground font-body text-sm placeholder:text-muted-foreground focus:outline-none focus:border-primary transition-colors"
-                  />
+                  <input name="firstName" type="text" placeholder="First Name" required
+                    className="w-full px-4 py-3 border border-border bg-card text-card-foreground font-body text-sm placeholder:text-muted-foreground focus:outline-none focus:border-primary transition-colors" />
+                  <input name="lastName" type="text" placeholder="Last Name" required
+                    className="w-full px-4 py-3 border border-border bg-card text-card-foreground font-body text-sm placeholder:text-muted-foreground focus:outline-none focus:border-primary transition-colors" />
                 </div>
-                <input
-                  type="email"
-                  placeholder="Email Address"
-                  required
-                  className="w-full px-4 py-3 border border-border bg-card text-card-foreground font-body text-sm placeholder:text-muted-foreground focus:outline-none focus:border-primary transition-colors"
-                />
-                <input
-                  type="tel"
-                  placeholder="Phone Number"
-                  required
-                  className="w-full px-4 py-3 border border-border bg-card text-card-foreground font-body text-sm placeholder:text-muted-foreground focus:outline-none focus:border-primary transition-colors"
-                />
-                <textarea
-                  rows={5}
-                  placeholder="Describe your legal matter..."
-                  className="w-full px-4 py-3 border border-border bg-card text-card-foreground font-body text-sm placeholder:text-muted-foreground focus:outline-none focus:border-primary transition-colors resize-none"
-                />
-                <button
-                  type="submit"
-                  className="w-full py-3.5 bg-primary text-primary-foreground font-body font-semibold text-sm uppercase tracking-[0.15em] transition-all duration-300 hover:bg-[hsl(var(--gold-light))]"
-                >
-                  Request Consultation
+                <input name="email" type="email" placeholder="Email Address" required
+                  className="w-full px-4 py-3 border border-border bg-card text-card-foreground font-body text-sm placeholder:text-muted-foreground focus:outline-none focus:border-primary transition-colors" />
+                <input name="phone" type="tel" placeholder="Phone Number" required
+                  className="w-full px-4 py-3 border border-border bg-card text-card-foreground font-body text-sm placeholder:text-muted-foreground focus:outline-none focus:border-primary transition-colors" />
+                <textarea name="message" rows={5} placeholder="Describe your legal matter..."
+                  className="w-full px-4 py-3 border border-border bg-card text-card-foreground font-body text-sm placeholder:text-muted-foreground focus:outline-none focus:border-primary transition-colors resize-none" />
+                <button type="submit" disabled={loading}
+                  className="w-full py-3.5 bg-primary text-primary-foreground font-body font-semibold text-sm uppercase tracking-[0.15em] transition-all duration-300 hover:bg-[hsl(var(--gold-light))] disabled:opacity-50">
+                  {loading ? "Submitting..." : "Request Consultation"}
                 </button>
               </>
             )}
@@ -122,50 +130,34 @@ const ContactSection = () => {
               <Phone className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
               <div>
                 <p className="font-body text-xs uppercase tracking-[0.2em] text-muted-foreground mb-1">Call Us</p>
-                <p className="font-body text-foreground text-sm">
-                  9223438655 / 9967713812 / 9220473363
-                </p>
+                <p className="font-body text-foreground text-sm">9223438655 / 9967713812 / 9220473363</p>
               </div>
             </div>
-
             <div className="flex gap-4">
               <Mail className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
               <div>
                 <p className="font-body text-xs uppercase tracking-[0.2em] text-muted-foreground mb-1">Email</p>
-                <a href="mailto:bnslegal01@gmail.com" className="font-body text-foreground text-sm hover:text-primary transition-colors">
-                  bnslegal01@gmail.com
-                </a>
+                <a href="mailto:bnslegal01@gmail.com" className="font-body text-foreground text-sm hover:text-primary transition-colors">bnslegal01@gmail.com</a>
               </div>
             </div>
-
             {offices.map((office) => (
               <div key={office.label} className="flex gap-4">
                 <MapPin className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
                 <div>
-                  <p className="font-body text-xs uppercase tracking-[0.2em] text-muted-foreground mb-1">
-                    {office.label}
-                  </p>
+                  <p className="font-body text-xs uppercase tracking-[0.2em] text-muted-foreground mb-1">{office.label}</p>
                   <p className="font-body text-foreground text-sm">{office.address}</p>
-                  <a
-                    href={`https://www.google.com/maps/search/?api=1&query=${office.mapQuery}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 mt-2 font-body text-xs text-primary hover:text-primary/80 uppercase tracking-[0.15em] transition-colors"
-                  >
-                    <ExternalLink className="w-3 h-3" />
-                    Open in Maps
+                  <a href={`https://www.google.com/maps/search/?api=1&query=${office.mapQuery}`} target="_blank" rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 mt-2 font-body text-xs text-primary hover:text-primary/80 uppercase tracking-[0.15em] transition-colors">
+                    <ExternalLink className="w-3 h-3" />Open in Maps
                   </a>
                 </div>
               </div>
             ))}
-
             <div className="flex gap-4">
               <Clock className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
               <div>
                 <p className="font-body text-xs uppercase tracking-[0.2em] text-muted-foreground mb-1">Hours</p>
-                <p className="font-body text-foreground text-sm whitespace-pre-line">
-                  Mon – Sat: 9:00 AM – 7:00 PM{"\n"}24/7 Emergency Line Available
-                </p>
+                <p className="font-body text-foreground text-sm whitespace-pre-line">Mon – Sat: 9:00 AM – 7:00 PM{"\n"}24/7 Emergency Line Available</p>
               </div>
             </div>
           </motion.div>
