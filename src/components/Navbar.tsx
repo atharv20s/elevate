@@ -27,34 +27,34 @@ const Navbar = () => {
         transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
           scrolled
-            ? "bg-background/90 backdrop-blur-xl border-b border-border/30 py-4"
-            : "py-6"
+            ? "bg-background/90 backdrop-blur-xl border-b border-border/30 py-3"
+            : "py-5"
         }`}
       >
-        <div className="max-w-6xl mx-auto px-6 flex items-center justify-between">
-          <a href="#" className="flex items-center gap-3 group">
-            <Scale className="w-6 h-6 text-primary transition-transform duration-300 group-hover:rotate-12" />
-            <span className="font-display text-lg tracking-[0.15em] uppercase text-foreground">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
+          <a href="#" className="flex items-center gap-2 sm:gap-3 group flex-shrink-0">
+            <Scale className="w-5 sm:w-6 h-5 sm:h-6 text-primary transition-transform duration-300 group-hover:rotate-12" />
+            <span className="font-display text-sm sm:text-base md:text-lg tracking-[0.15em] uppercase text-primary whitespace-nowrap leading-[1.2]">
               BNS<span className="text-primary"> Legal</span>
             </span>
           </a>
 
-          <nav className="hidden md:flex items-center gap-8">
+          <nav className="hidden lg:flex items-center gap-6 xl:gap-8">
             {navItems.map((item) => (
               <a
                 key={item.label}
                 href={item.href}
-                className="font-body text-sm tracking-[0.1em] uppercase text-muted-foreground hover:text-foreground transition-colors duration-300"
+                className="font-body text-xs sm:text-sm tracking-[0.1em] uppercase text-muted-foreground hover:text-foreground transition-colors duration-300 whitespace-nowrap"
               >
                 {item.label}
               </a>
             ))}
           </nav>
 
-          <div className="hidden md:block">
+          <div className="hidden md:block flex-shrink-0">
             <a
               href="#contact"
-              className="px-6 py-2.5 bg-primary text-primary-foreground font-body text-xs font-semibold uppercase tracking-[0.15em] transition-all duration-300 hover:bg-[hsl(var(--gold-light))]"
+              className="px-4 sm:px-6 py-2 sm:py-2.5 bg-primary text-primary-foreground font-body text-xs font-semibold uppercase tracking-[0.1em] sm:tracking-[0.15em] transition-all duration-300 hover:bg-[hsl(var(--gold-light))] whitespace-nowrap"
             >
               Consultation
             </a>
@@ -62,9 +62,9 @@ const Navbar = () => {
 
           <button
             onClick={() => setMobileOpen(true)}
-            className="md:hidden text-foreground"
+            className="lg:hidden text-foreground flex-shrink-0"
           >
-            <Menu className="w-6 h-6" />
+            <Menu className="w-5 sm:w-6 h-5 sm:h-6" />
           </button>
         </div>
       </motion.header>

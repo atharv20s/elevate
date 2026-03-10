@@ -1,14 +1,14 @@
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
-import { Phone } from "lucide-react";
+import { Phone, Scale } from "lucide-react";
 
 const team = [
-  { name: "Shri B. N. Shukla", role: "Senior Partner & Founder", qualifications: "B.A., LL.B.", specialty: "Civil, Society & Rent Control Law", phone: "9223438655", since: "1988" },
-  { name: "Shri Deepak Shukla", role: "Partner", qualifications: "B.L.S., LL.B., LL.M.", specialty: "Civil, Arbitration, DRT, High Court, NCLT, RERA", phone: "9967713812" },
-  { name: "Shri Sandeep Shukla", role: "Partner", qualifications: "B.L.S., LL.B., LL.M.", specialty: "Civil, Criminal, Family, Consumer & Co-operative Laws", phone: "9220473363" },
-  { name: "Ms. Neelam S. Shukla", role: "Partner", qualifications: "B.C.A., M.A., LL.B., LL.M.", specialty: "Criminal, Civil, Family & Women's Rights", phone: "9479256501" },
-  { name: "Shri Vinayak Shukla", role: "Advocate", qualifications: "B.L.S., LL.B.", specialty: "Civil, Criminal, High Court & Co-operative Courts", phone: "8655890872" },
-  { name: "Shri Shivprasad Pathak", role: "Advocate", qualifications: "B.A., LL.B.", specialty: "Civil & Criminal Practice — City Civil, Sessions & High Courts", phone: "9867289818" },
+  { name: "Mr. B. N. Shukla", role: "Senior Partner & Founder", qualifications: "B.A., LL.B.", specialty: "Civil, Society & Rent Control Law", phone: "9223438655", since: "1988" },
+  { name: "Mr. Deepak Shukla", role: "Advocate", qualifications: "B.L.S., LL.B., LL.M.", specialty: "Civil, Arbitration, DRT, High Court, NCLT, RERA", phone: "9967713812" },
+  { name: "Mr. Sandeep Shukla", role: "Advocate", qualifications: "B.L.S., LL.B., LL.M.", specialty: "Civil, Criminal, Family, Consumer & Co-operative Laws", phone: "9220473363" },
+  { name: "Ms. Neelam S. Shukla", role: "Advocate", qualifications: "B.C.A., M.A., LL.B., LL.M.", specialty: "Criminal, Civil, Family & Women's Rights", phone: "9479256501" },
+  { name: "Mr. Vinayak Shukla", role: "Advocate", qualifications: "B.L.S., LL.B.", specialty: "Civil, Criminal, High Court & Co-operative Courts", phone: "8655890872" },
+  { name: "Mr. Shivprasad Pathak", role: "Advocate", qualifications: "B.A., LL.B.", specialty: "Civil & Criminal Practice — City Civil, Sessions & High Courts", phone: "9867289818" },
 ];
 
 const TeamSection = () => {
@@ -45,11 +45,9 @@ const TeamSection = () => {
               transition={{ duration: 0.5, delay: 0.1 + i * 0.1 }}
               className="group p-6 border border-border bg-card hover:border-primary/40 transition-all duration-500"
             >
-              {/* Initials avatar */}
+              {/* Law icon avatar */}
               <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">
-                <span className="font-display text-lg font-bold text-primary">
-                  {member.name.split(" ").filter(n => n.length > 1).map(n => n[0]).join("").slice(0, 2)}
-                </span>
+                <Scale className="w-7 h-7 text-primary" />
               </div>
 
               <h3 className="font-display text-lg font-semibold text-card-foreground mb-1">
@@ -83,7 +81,7 @@ const TeamSection = () => {
           className="mt-8 p-6 border border-border bg-card text-center"
         >
           <p className="font-body text-muted-foreground text-sm">
-            <span className="text-primary font-semibold">+ 4 Associate Advocates</span> practicing across Mumbai, Thane & Navi Mumbai — handling drafting, research, and trial advocacy in Civil, Criminal, Consumer, RERA & Tribunal matters.
+            <span className="text-primary font-semibold">+ 10 Associate Advocates & 5 Legal Interns</span> practicing across Mumbai, Thane & Navi Mumbai — handling drafting, research, legal advisory, and trial advocacy in Civil, Criminal, Consumer, RERA & Tribunal matters.
           </p>
         </motion.div>
       </div>

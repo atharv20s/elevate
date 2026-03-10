@@ -58,8 +58,14 @@ const ContactSection = () => {
   };
 
   return (
-    <section id="contact" ref={ref} className="py-24 md:py-32 bg-background">
-      <div className="max-w-6xl mx-auto px-6">
+    <section id="contact" ref={ref} className="py-24 md:py-32 bg-background relative overflow-hidden">
+      {/* Glassmorphic background with 3D effect */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/5 to-transparent" />
+        <div className="absolute top-0 right-0 w-96 h-96 bg-primary/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 left-0 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />
+      </div>
+      <div className="max-w-6xl mx-auto px-6 relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
@@ -79,14 +85,14 @@ const ContactSection = () => {
         </motion.div>
 
         <div className="grid md:grid-cols-2 gap-12">
-          {/* Form */}
-          <motion.form
+          {/* Form Container - Glassmorphic */}
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={inView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.6, delay: 0.2 }}
-            onSubmit={handleSubmit}
-            className="space-y-5"
+            className="backdrop-blur-xl bg-white/10 border border-white/20 rounded-2xl p-8 shadow-2xl hover:bg-white/15 transition-all duration-300"
           >
+            <form onSubmit={handleSubmit} className="space-y-5">
             {submitted ? (
               <div className="flex flex-col items-center justify-center py-16 space-y-4">
                 <div className="w-16 h-16 rounded-full bg-primary/20 flex items-center justify-center">
@@ -101,30 +107,31 @@ const ContactSection = () => {
               <>
                 <div className="grid grid-cols-2 gap-4">
                   <input name="firstName" type="text" placeholder="First Name" required
-                    className="w-full px-4 py-3 border border-border bg-card text-card-foreground font-body text-sm placeholder:text-muted-foreground focus:outline-none focus:border-primary transition-colors" />
+                    className="w-full px-4 py-3 backdrop-blur-md bg-white/10 border border-white/20 text-foreground font-body text-sm placeholder:text-muted-foreground focus:outline-none focus:border-primary focus:bg-white/15 transition-all rounded-lg" />
                   <input name="lastName" type="text" placeholder="Last Name" required
-                    className="w-full px-4 py-3 border border-border bg-card text-card-foreground font-body text-sm placeholder:text-muted-foreground focus:outline-none focus:border-primary transition-colors" />
+                    className="w-full px-4 py-3 backdrop-blur-md bg-white/10 border border-white/20 text-foreground font-body text-sm placeholder:text-muted-foreground focus:outline-none focus:border-primary focus:bg-white/15 transition-all rounded-lg" />
                 </div>
                 <input name="email" type="email" placeholder="Email Address" required
-                  className="w-full px-4 py-3 border border-border bg-card text-card-foreground font-body text-sm placeholder:text-muted-foreground focus:outline-none focus:border-primary transition-colors" />
+                  className="w-full px-4 py-3 backdrop-blur-md bg-white/10 border border-white/20 text-foreground font-body text-sm placeholder:text-muted-foreground focus:outline-none focus:border-primary focus:bg-white/15 transition-all rounded-lg" />
                 <input name="phone" type="tel" placeholder="Phone Number" required
-                  className="w-full px-4 py-3 border border-border bg-card text-card-foreground font-body text-sm placeholder:text-muted-foreground focus:outline-none focus:border-primary transition-colors" />
+                  className="w-full px-4 py-3 backdrop-blur-md bg-white/10 border border-white/20 text-foreground font-body text-sm placeholder:text-muted-foreground focus:outline-none focus:border-primary focus:bg-white/15 transition-all rounded-lg" />
                 <textarea name="message" rows={5} placeholder="Describe your legal matter..."
-                  className="w-full px-4 py-3 border border-border bg-card text-card-foreground font-body text-sm placeholder:text-muted-foreground focus:outline-none focus:border-primary transition-colors resize-none" />
+                  className="w-full px-4 py-3 backdrop-blur-md bg-white/10 border border-white/20 text-foreground font-body text-sm placeholder:text-muted-foreground focus:outline-none focus:border-primary focus:bg-white/15 transition-all rounded-lg resize-none" />
                 <button type="submit" disabled={loading}
                   className="w-full py-3.5 bg-primary text-primary-foreground font-body font-semibold text-sm uppercase tracking-[0.15em] transition-all duration-300 hover:bg-[hsl(var(--gold-light))] disabled:opacity-50">
                   {loading ? "Submitting..." : "Request Consultation"}
                 </button>
               </>
             )}
-          </motion.form>
+            </form>
+          </motion.div>
 
-          {/* Contact info */}
+          {/* Contact info Container - Glassmorphic */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={inView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.6, delay: 0.3 }}
-            className="space-y-8"
+            className="backdrop-blur-xl bg-white/10 border border-white/20 rounded-2xl p-8 shadow-2xl space-y-8"
           >
             <div className="flex gap-4">
               <Phone className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />

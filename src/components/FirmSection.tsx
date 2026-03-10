@@ -39,7 +39,7 @@ const FirmSection = () => {
             </h2>
             <div className="w-20 h-[2px] bg-gradient-to-r from-primary to-primary/40 mb-6" />
             <p className="font-body text-[hsl(var(--gold-light))]/70 leading-relaxed mb-4">
-              Founded in 1988 by Senior Advocate Shri B. N. Shukla, BNS LEGAL has an unbroken legacy of over three and a half decades. The firm is registered with Bar Council of Maharashtra and Goa (MAH-LF/802/2024).
+              Founded in 1988 by Senior Advocate Mr. B. N. Shukla, BNS LEGAL has an unbroken legacy of over three and a half decades. The firm is registered with Bar Council of Maharashtra and Goa (MAH-LF/802/2024).
             </p>
             <p className="font-body text-[hsl(var(--gold-light))]/70 leading-relaxed">
               With 10 dedicated associate advocates and 5 full-time legal interns under continuous mentorship, BNS LEGAL represents clients across Civil, Criminal, Appellate, Tribunal, and Regulatory Authorities in Mumbai, Thane, and Maharashtra.

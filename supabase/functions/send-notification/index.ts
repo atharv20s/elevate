@@ -7,6 +7,44 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+const TARGET_EMAIL = "bnslegal01@gmail.com";
+
+async function sendEmailViaResend(subject: string, body: string): Promise<boolean> {
+  const resendKey = Deno.env.get("RESEND_API_KEY");
+  if (!resendKey) {
+    console.error("RESEND_API_KEY not set — email not sent");
+    return false;
+  }
+
+  try {
+    const res = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${resendKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        from: "BNS Legal Website <onboarding@resend.dev>",
+        to: [TARGET_EMAIL],
+        subject,
+        html: body.includes("<") ? body : body.replace(/\n/g, "<br>"),
+      }),
+    });
+
+    if (!res.ok) {
+      const err = await res.text();
+      console.error("Resend API error:", err);
+      return false;
+    }
+
+    console.log(`Email sent successfully: ${subject}`);
+    return true;
+  } catch (err) {
+    console.error("Failed to send email via Resend:", err);
+    return false;
+  }
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -42,16 +80,13 @@ serve(async (req) => {
 
       subject = `New Consultation Request from ${data.firstName} ${data.lastName}`;
       body = `
-New consultation request received on BNS Legal website.
-
-Name: ${data.firstName} ${data.lastName}
-Email: ${data.email}
-Phone: ${data.phone}
-Legal Matter: ${data.message || "Not specified"}
-
----
-BNS LEGAL - Justice for All
-Advocates, Legal Consultants & Notary Public
+<h2>New Consultation Request — BNS Legal Website</h2>
+<p><strong>Name:</strong> ${data.firstName} ${data.lastName}</p>
+<p><strong>Email:</strong> ${data.email}</p>
+<p><strong>Phone:</strong> ${data.phone}</p>
+<p><strong>Legal Matter:</strong> ${data.message || "Not specified"}</p>
+<hr>
+<p><em>BNS LEGAL — Justice for All<br>Advocates, Legal Consultants &amp; Notary Public</em></p>
       `.trim();
     } else if (type === "internship") {
       const { error: dbError } = await supabaseAdmin
@@ -87,6 +122,70 @@ Message: ${data.message || "Not specified"}
 BNS LEGAL - Justice for All
 Advocates, Legal Consultants & Notary Public
       `.trim();
+    } else if (type === "chat_lead") {
+      // High-priority lead from chatbot - user shared phone number
+      const phoneDigits = (data.phone || "").replace(/\D/g, "");
+      if (phoneDigits.length !== 10) {
+        return new Response(
+          JSON.stringify({ success: false, error: "Invalid phone number" }),
+          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
+      // Store lead in DB
+      const { error: dbError } = await supabaseAdmin
+        .from("chat_queries")
+        .insert({
+          user_message: `[LEAD] Name: ${data.name || "N/A"} | Phone: ${data.phone} | Email: ${data.email || "N/A"} | Area: ${data.practiceArea}`,
+          bot_response: data.conversationSummary || "",
+          session_id: data.sessionId || null,
+        });
+
+      if (dbError) {
+        console.error("DB insert error:", dbError);
+      }
+
+      subject = `🔔 New ${data.practiceArea} Lead via AI Chatbot`;
+      
+      // Map practice area to recommended advocate
+      const advocateMap: Record<string, string> = {
+        "Redevelopment / Co-operative Society": "Mr. Sandeep Shukla (9220473363)",
+        "Family & Matrimonial": "Ms. Neelam S. Shukla (9479256501)",
+        "Civil / Property": "Mr. B. N. Shukla (9223438655)",
+        "Criminal": "Mr. Sandeep Shukla (9220473363)",
+        "Consumer Protection": "Mr. Sandeep Shukla (9220473363)",
+        "Motor Accident / Insurance": "Mr. Vinayak Shukla (8655890872)",
+        "RERA": "Mr. Deepak Shukla (9967713812)",
+        "High Court": "Mr. Deepak Shukla (9967713812)",
+        "Corporate / Tribunal": "Mr. Deepak Shukla (9967713812)",
+        "Labour Law": "Mr. Vinayak Shukla (8655890872)",
+        "Cyber Crime": "Mr. Sandeep Shukla (9220473363)",
+        "Tax & Revenue": "Mr. Deepak Shukla (9967713812)",
+        "Constitutional & Public Law": "Mr. Deepak Shukla (9967713812)",
+        "Banking & Finance": "Mr. B. N. Shukla (9223438655)",
+        "Senior Citizen": "Ms. Neelam S. Shukla (9479256501)",
+        "Matrimonial Property": "Ms. Neelam S. Shukla (9479256501)",
+      };
+      const recommendedAdvocate = advocateMap[data.practiceArea] || "General — assign as appropriate";
+
+      body = `
+<h2>🔔 New Consultation Lead — BNS Legal AI Chatbot</h2>
+<table style="border-collapse:collapse;width:100%;max-width:500px;">
+  <tr><td style="padding:8px;font-weight:bold;border-bottom:1px solid #ddd;">Client Name</td><td style="padding:8px;border-bottom:1px solid #ddd;">${data.name || "Not provided"}</td></tr>
+  <tr><td style="padding:8px;font-weight:bold;border-bottom:1px solid #ddd;">Phone</td><td style="padding:8px;border-bottom:1px solid #ddd;"><a href="tel:${data.phone}">${data.phone}</a></td></tr>
+  <tr><td style="padding:8px;font-weight:bold;border-bottom:1px solid #ddd;">Email</td><td style="padding:8px;border-bottom:1px solid #ddd;">${data.email || "Not provided"}</td></tr>
+  <tr><td style="padding:8px;font-weight:bold;border-bottom:1px solid #ddd;">Practice Area</td><td style="padding:8px;border-bottom:1px solid #ddd;">${data.practiceArea}</td></tr>
+  <tr><td style="padding:8px;font-weight:bold;border-bottom:1px solid #ddd;">Recommended Advocate</td><td style="padding:8px;border-bottom:1px solid #ddd;">${recommendedAdvocate}</td></tr>
+</table>
+<h3>Client's Latest Query</h3>
+<p>${data.userMessage}</p>
+<h3>Full Chat Transcript</h3>
+<pre style="background:#f5f5f5;padding:12px;border-radius:4px;white-space:pre-wrap;font-size:13px;line-height:1.5;color:#333;">${data.conversationSummary || "N/A"}</pre>
+<hr>
+<p><strong>⚡ Action Required:</strong> Call the client at <a href="tel:${data.phone}">${data.phone}</a> to schedule a consultation.</p>
+<p><em>Auto-captured by BNS Legal AI Chatbot</em><br>Session: ${data.sessionId}</p>
+      `.trim();
+
     } else if (type === "chat_query") {
       const { error: dbError } = await supabaseAdmin
         .from("chat_queries")
@@ -122,15 +221,11 @@ BNS LEGAL - Justice for All
       throw new Error("Invalid request type");
     }
 
-    // Send email notification via Supabase Edge Function email
-    // Using a simple SMTP-free approach: store in DB and use Resend/etc later
-    // For now, we use the built-in Supabase email if configured, or just store
-    console.log(`Email notification queued: ${subject}`);
-    console.log(`To: bnslegal01@gmail.com`);
-    console.log(`Body: ${body}`);
+    // Send actual email notification via Resend
+    const emailSent = await sendEmailViaResend(subject, body);
 
     return new Response(
-      JSON.stringify({ success: true, message: "Request submitted successfully" }),
+      JSON.stringify({ success: true, emailSent, message: "Request submitted successfully" }),
       { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   } catch (error) {

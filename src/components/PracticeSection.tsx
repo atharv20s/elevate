@@ -20,8 +20,14 @@ const PracticeSection = () => {
   const inView = useInView(ref, { once: true, margin: "-100px" });
 
   return (
-    <section id="practice" ref={ref} className="py-24 md:py-32 bg-background">
-      <div className="max-w-6xl mx-auto px-6">
+    <section id="practice" ref={ref} className="py-24 md:py-32 bg-background relative overflow-hidden">
+      {/* Glassmorphic ambient background */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute inset-0 bg-gradient-to-b from-primary/3 via-transparent to-primary/2" />
+        <div className="absolute top-1/4 left-0 w-[600px] h-[600px] bg-primary/5 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 right-0 w-[700px] h-[700px] bg-primary/4 rounded-full blur-3xl" />
+      </div>
+      <div className="max-w-6xl mx-auto px-6 relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
