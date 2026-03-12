@@ -3,8 +3,8 @@ import { useRef } from "react";
 
 const stats = [
   { value: "35+", label: "Years of Practice" },
-  { value: "5,000+", label: "Cases Won" },
-  { value: "98%", label: "Success Rate" },
+  { value: "20,000+", label: "Total Cases" },
+  { value: "90%+", label: "Success Rate" },
   { value: "10+", label: "Associate Advocates" },
 ];
 

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Scale, Menu, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
+import Logo from "./Logo";
 
 const navItems = [
   { label: "Practice", href: "#practice" },
@@ -32,11 +33,8 @@ const Navbar = () => {
         }`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
-          <a href="#" className="flex items-center gap-2 sm:gap-3 group flex-shrink-0">
-            <Scale className="w-5 sm:w-6 h-5 sm:h-6 text-primary transition-transform duration-300 group-hover:rotate-12" />
-            <span className="font-display text-sm sm:text-base md:text-lg tracking-[0.15em] uppercase text-primary whitespace-nowrap leading-[1.2]">
-              BNS<span className="text-primary"> Legal</span>
-            </span>
+          <a href="#" className="group flex-shrink-0 transition-transform duration-300 hover:scale-105">
+            <Logo size="sm" />
           </a>
 
           <nav className="hidden lg:flex items-center gap-6 xl:gap-8">
