@@ -4,12 +4,12 @@ import { Phone, Scale } from "lucide-react";
 import ScrollStoryWrapper from "./ScrollStoryWrapper";
 
 const team = [
+  { name: "Mr. B. N. Shukla", role: "Senior Advocate & Founder", qualifications: "B.A., LL.B.", specialty: "Civil, Society & Rent Control Law", phone: "9223438655", hasWhatsapp: false },
   { name: "Mr. Deepak Shukla", role: "Advocate", qualifications: "B.L.S., LL.B., LL.M.", specialty: "Civil, Arbitration, DRT, High Court, NCLT, RERA", phone: "9967713812", hasWhatsapp: true },
   { name: "Mr. Sandeep Shukla", role: "Advocate", qualifications: "B.L.S., LL.B., LL.M.", specialty: "Civil, Criminal, Family, Consumer & Co-operative Laws", phone: "9220473363", hasWhatsapp: true },
   { name: "Ms. Neelam S. Shukla", role: "Advocate", qualifications: "B.C.A., M.A., LL.B., LL.M.", specialty: "Criminal, Civil, Family & Women's Rights", phone: "9479256501", hasWhatsapp: true },
   { name: "Mr. Vinayak Shukla", role: "Advocate", qualifications: "B.L.S., LL.B.", specialty: "Civil, Criminal, High Court & Co-operative Courts", phone: "9967713812", hasWhatsapp: false },
   { name: "Mr. Shivprasad Pathak", role: "Advocate", qualifications: "B.A., LL.B.", specialty: "Civil & Criminal Practice — City Civil, Sessions & High Courts", phone: "9967713812", hasWhatsapp: false },
-  { name: "Mr. B. N. Shukla", role: "Senior Partner & Founder", qualifications: "B.A., LL.B.", specialty: "Civil, Society & Rent Control Law", phone: "9223438655", hasWhatsapp: false },
 ];
 
 // Split into rows of 3
