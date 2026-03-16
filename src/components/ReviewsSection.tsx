@@ -5,7 +5,7 @@ import ScrollStoryWrapper from "./ScrollStoryWrapper";
 
 const reviews = [
   { name: "Praveen Maurya", reviewsCount: "3 reviews", time: "2 months ago", text: "BNS Legal is a very good law firm. The team is professional, knowledgeable, and supportive. Mr. Sandeep Shukla Sir is a very good advocate—highly experienced, polite, and clear in his legal guidance. I am fully satisfied with the legal services provided and would highly recommend BNS Legal to anyone seeking reliable legal assistance.", rating: 5 },
-  { name: "Rani Das", reviewsCount: "10 reviews", time: "4 months ago", text: "Sandeep sir gives proper conclusion and concreate result .he also gives u proper an surity of the case with proper study proper reasearch the he come to accurate result ❤️1", rating: 5 },
+  { name: "Rani Das", reviewsCount: "10 reviews", time: "4 months ago", text: "Sandeep sir gives proper conclusion and concreate result .he also gives u proper an surity of the case with proper study proper reasearch the he come to accurate result", rating: 5 },
   { name: "Amit Sharma", reviewsCount: "5 reviews", time: "1 year ago", text: "Excellent service! The advocates at BNS Legal handled my property dispute with utmost professionalism. Senior Advocate B. N. Shukla has unparalleled knowledge of civil matters. Highly recommended.", rating: 5 },
   { name: "Sneha Patel", reviewsCount: "2 reviews", time: "11 months ago", text: "Very supportive and transparent team. Mr. Sandeep guided us through a complex family matter smoothly. We felt reassured at every step.", rating: 5 },
   { name: "Rajesh Kumar", reviewsCount: "8 reviews", time: "1 year ago", text: "Best legal firm in Mira Road. Deepak Shukla sir helped me with RERA issues. Very fast and accurate results.", rating: 5 },
