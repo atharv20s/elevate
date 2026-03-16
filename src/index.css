@@ -72,11 +72,20 @@
     @apply border-border;
   }
 
+  html {
+    scroll-behavior: smooth;
+  }
+
   body {
     @apply bg-background text-foreground font-body antialiased;
   }
 
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     @apply font-display;
   }
 }
@@ -117,8 +126,7 @@
   }
 
   .nav-link {
-    @apply relative font-display text-sm tracking-[0.15em] uppercase text-muted-foreground 
-           transition-colors duration-300 hover:text-foreground;
+    @apply relative font-display text-sm tracking-[0.15em] uppercase text-muted-foreground transition-colors duration-300 hover:text-foreground;
   }
 
   .nav-link::after {
@@ -131,15 +139,11 @@
   }
 
   .cta-primary {
-    @apply inline-flex items-center gap-3 px-8 py-4 bg-primary text-primary-foreground 
-           font-display text-sm tracking-[0.15em] uppercase rounded-sm
-           transition-all duration-300 hover:shadow-[var(--shadow-gold)] hover:scale-[1.02];
+    @apply inline-flex items-center gap-3 px-8 py-4 bg-primary text-primary-foreground font-display text-sm tracking-[0.15em] uppercase rounded-sm transition-all duration-300 hover:shadow-[var(--shadow-gold)] hover:scale-[1.02];
   }
 
   .cta-glass {
-    @apply inline-flex items-center gap-3 px-8 py-4 glass-panel 
-           font-display text-sm tracking-[0.15em] uppercase text-foreground
-           transition-all duration-300 hover:border-primary/40 hover:shadow-[var(--shadow-gold)];
+    @apply inline-flex items-center gap-3 px-8 py-4 glass-panel font-display text-sm tracking-[0.15em] uppercase text-foreground transition-all duration-300 hover:border-primary/40 hover:shadow-[var(--shadow-gold)];
   }
 
   .divider-gold {

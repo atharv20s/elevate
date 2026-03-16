@@ -118,7 +118,7 @@ const ConsentPage = ({ onConsentAccepted }: ConsentPageProps) => {
           transition={{ duration: 0.6, delay: 0.4 }}
           className="text-center text-xs text-muted-foreground mt-6"
         >
-          BNS Legal © 2024 | Registered with Bar Council of Maharashtra and Goa (MAH-LF/802/2024)
+          BNS Legal © 2026 | Registered with Bar Council of Maharashtra and Goa (MAH-LF/802/2024)
         </motion.p>
       </motion.div>
     </div>
