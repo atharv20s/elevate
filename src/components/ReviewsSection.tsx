@@ -78,7 +78,7 @@ const ReviewsSection = () => {
             </div>
 
             <a
-              href="https://www.google.com/search?q=BNS+LEGAL+%27JUSTICE+FOR+ALL%27+Reviews"
+              href="https://maps.app.goo.gl/v4ARTquhePj1yDiu8"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex flex-shrink-0 items-center gap-3 px-8 py-4 bg-primary text-primary-foreground font-display text-sm font-semibold tracking-[0.15em] uppercase hover:bg-[hsl(var(--gold-light))] hover:scale-105 transition-all duration-300 shadow-[0_0_20px_rgba(255,191,0,0.2)] rounded-sm"

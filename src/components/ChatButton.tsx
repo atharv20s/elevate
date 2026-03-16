@@ -836,7 +836,7 @@ Email: ${updatedLead.email || "Not provided"}
 Query: ${userMsg}`;
           
           const encodedQuery = encodeURIComponent(queryText);
-          const whatsappUrl = `https://api.whatsapp.com/send/?phone=919223438655&text=${encodedQuery}&type=phone_number&app_absent=0`;
+          const whatsappUrl = `https://api.whatsapp.com/send/?phone=919967713812&text=${encodedQuery}&type=phone_number&app_absent=0`;
           
           setMessages((prev) => [
             ...prev, 

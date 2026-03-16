@@ -4,12 +4,12 @@ import { Phone, Scale } from "lucide-react";
 import ScrollStoryWrapper from "./ScrollStoryWrapper";
 
 const team = [
-  { name: "Mr. B. N. Shukla", role: "Senior Partner & Founder", qualifications: "B.A., LL.B.", specialty: "Civil, Society & Rent Control Law", phone: "9223438655" },
-  { name: "Mr. Deepak Shukla", role: "Advocate", qualifications: "B.L.S., LL.B., LL.M.", specialty: "Civil, Arbitration, DRT, High Court, NCLT, RERA", phone: "9967713812" },
-  { name: "Mr. Sandeep Shukla", role: "Advocate", qualifications: "B.L.S., LL.B., LL.M.", specialty: "Civil, Criminal, Family, Consumer & Co-operative Laws", phone: "9220473363" },
-  { name: "Ms. Neelam S. Shukla", role: "Advocate", qualifications: "B.C.A., M.A., LL.B., LL.M.", specialty: "Criminal, Civil, Family & Women's Rights", phone: "9479256501" },
-  { name: "Mr. Vinayak Shukla", role: "Advocate", qualifications: "B.L.S., LL.B.", specialty: "Civil, Criminal, High Court & Co-operative Courts", phone: "8655890872" },
-  { name: "Mr. Shivprasad Pathak", role: "Advocate", qualifications: "B.A., LL.B.", specialty: "Civil & Criminal Practice — City Civil, Sessions & High Courts", phone: "9867289818" },
+  { name: "Mr. Deepak Shukla", role: "Advocate", qualifications: "B.L.S., LL.B., LL.M.", specialty: "Civil, Arbitration, DRT, High Court, NCLT, RERA", phone: "9967713812", hasWhatsapp: true },
+  { name: "Mr. Sandeep Shukla", role: "Advocate", qualifications: "B.L.S., LL.B., LL.M.", specialty: "Civil, Criminal, Family, Consumer & Co-operative Laws", phone: "9220473363", hasWhatsapp: true },
+  { name: "Ms. Neelam S. Shukla", role: "Advocate", qualifications: "B.C.A., M.A., LL.B., LL.M.", specialty: "Criminal, Civil, Family & Women's Rights", phone: "9479256501", hasWhatsapp: true },
+  { name: "Mr. Vinayak Shukla", role: "Advocate", qualifications: "B.L.S., LL.B.", specialty: "Civil, Criminal, High Court & Co-operative Courts", phone: "9967713812", hasWhatsapp: false },
+  { name: "Mr. Shivprasad Pathak", role: "Advocate", qualifications: "B.A., LL.B.", specialty: "Civil & Criminal Practice — City Civil, Sessions & High Courts", phone: "9967713812", hasWhatsapp: false },
+  { name: "Mr. B. N. Shukla", role: "Senior Partner & Founder", qualifications: "B.A., LL.B.", specialty: "Civil, Society & Rent Control Law", phone: "9223438655", hasWhatsapp: false },
 ];
 
 // Split into rows of 3
@@ -107,15 +107,17 @@ const TeamSection = () => {
                           <Phone className="w-3.5 h-3.5" />
                           <span className="font-mono">{member.phone}</span>
                         </a>
-                        <a
-                          href={`https://api.whatsapp.com/send/?phone=91${member.phone}&text=Hello+BNS+Legal%2C+I+need+a+consultation&type=phone_number&app_absent=0`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-2 text-xs text-[#25D366]/80 hover:text-[#25D366] transition-colors bg-[#25D366]/10 px-3 py-1.5 rounded-full whitespace-nowrap"
-                        >
-                          <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-message-circle"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg>
-                          <span className="font-mono font-medium">WhatsApp</span>
-                        </a>
+                        {member.hasWhatsapp && (
+                          <a
+                            href={`https://api.whatsapp.com/send/?phone=91${member.phone}&text=Hello+BNS+Legal%2C+I+need+a+consultation&type=phone_number&app_absent=0`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-2 text-xs text-[#25D366]/80 hover:text-[#25D366] transition-colors bg-[#25D366]/10 px-3 py-1.5 rounded-full whitespace-nowrap"
+                          >
+                            <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-message-circle"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg>
+                            <span className="font-mono font-medium">WhatsApp</span>
+                          </a>
+                        )}
                       </div>
                     </div>
                   ))}
