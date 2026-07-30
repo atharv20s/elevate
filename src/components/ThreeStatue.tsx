@@ -47,7 +47,7 @@ function StatueModel({ dragDeltaX, isDragging, onLoaded }: StatueModelProps) {
 
     // Scale model to fill viewport — target ~3 units tall
     const maxDim = Math.max(size.x, size.y, size.z);
-    const desiredHeight = 3.8;
+    const desiredHeight = 3.2;
     const scaleFactor = desiredHeight / maxDim;
     scene.scale.setScalar(scaleFactor);
 
@@ -129,10 +129,10 @@ function StudioLights() {
 /* ── Camera ── */
 function CameraSetup({ zoom }: { zoom: number }) {
   const { camera } = useThree();
-  const targetZ = useRef(3.8);
+  const targetZ = useRef(4.2);
 
   useEffect(() => {
-    camera.position.set(0, 0.15, 3.8);
+    camera.position.set(0, 0.15, 4.2);
     camera.lookAt(0, 0.1, 0);
   }, [camera]);
 
@@ -156,7 +156,7 @@ export default function ThreeStatue() {
   const [loaded, setLoaded] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [dragDeltaX, setDragDeltaX] = useState(0);
-  const [cameraZ, setCameraZ] = useState(3.8);
+  const [cameraZ, setCameraZ] = useState(4.2);
   const lastPointerX = useRef(0);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -170,7 +170,7 @@ export default function ThreeStatue() {
       e.preventDefault();
       setCameraZ((prev) => {
         const next = prev + e.deltaY * 0.004;
-        return Math.max(3.0, Math.min(6.0, next)); // tighter clamp to prevent overflow
+        return Math.max(3.0, Math.min(6.5, next)); // tighter clamp to prevent overflow
       });
     };
     el.addEventListener("wheel", onWheel, { passive: false });
