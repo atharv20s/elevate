@@ -9,6 +9,103 @@ const corsHeaders = {
 
 const TARGET_EMAIL = "bnslegal01@gmail.com";
 
+// ═══════════════════════════════════════════
+// RATE LIMITING — Prevent DDoS / email spam
+// ═══════════════════════════════════════════
+
+interface RateLimitEntry {
+  count: number;
+  windowStart: number;
+}
+
+// In-memory rate limit stores (reset on cold start, but still effective against bursts)
+const sessionChatCounts = new Map<string, number>();        // session → total chat messages
+const sessionLeadCounts = new Map<string, number>();         // session → total lead emails sent
+const ipLeadLimits = new Map<string, RateLimitEntry>();      // IP → lead emails in current hour
+let globalLeadCount: RateLimitEntry = { count: 0, windowStart: Date.now() };
+
+const LIMITS = {
+  CHAT_PER_SESSION: 50,      // Max chat messages saved per session
+  LEADS_PER_SESSION: 3,      // Max lead emails per session
+  LEADS_PER_IP_PER_HOUR: 5,  // Max lead emails per IP per hour
+  GLOBAL_LEADS_PER_HOUR: 30, // Max lead emails across ALL users per hour
+};
+
+const ONE_HOUR = 60 * 60 * 1000;
+
+function getClientIP(req: Request): string {
+  return (
+    req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+    req.headers.get("x-real-ip") ||
+    req.headers.get("cf-connecting-ip") ||
+    "unknown"
+  );
+}
+
+function checkSessionChatLimit(sessionId: string): boolean {
+  const count = sessionChatCounts.get(sessionId) || 0;
+  return count < LIMITS.CHAT_PER_SESSION;
+}
+
+function incrementSessionChat(sessionId: string): void {
+  sessionChatCounts.set(sessionId, (sessionChatCounts.get(sessionId) || 0) + 1);
+}
+
+function checkLeadLimits(sessionId: string, ip: string): { allowed: boolean; reason?: string } {
+  // Check session lead limit
+  const sessionLeads = sessionLeadCounts.get(sessionId) || 0;
+  if (sessionLeads >= LIMITS.LEADS_PER_SESSION) {
+    return { allowed: false, reason: "Maximum lead submissions reached for this session" };
+  }
+
+  // Check IP hourly limit
+  const now = Date.now();
+  const ipEntry = ipLeadLimits.get(ip);
+  if (ipEntry) {
+    if (now - ipEntry.windowStart > ONE_HOUR) {
+      // Reset window
+      ipLeadLimits.set(ip, { count: 0, windowStart: now });
+    } else if (ipEntry.count >= LIMITS.LEADS_PER_IP_PER_HOUR) {
+      return { allowed: false, reason: "Too many submissions from your network. Please try again later." };
+    }
+  }
+
+  // Check global hourly limit
+  if (now - globalLeadCount.windowStart > ONE_HOUR) {
+    globalLeadCount = { count: 0, windowStart: now };
+  }
+  if (globalLeadCount.count >= LIMITS.GLOBAL_LEADS_PER_HOUR) {
+    return { allowed: false, reason: "Our system is currently busy. Please try again in a few minutes." };
+  }
+
+  return { allowed: true };
+}
+
+function incrementLeadCounters(sessionId: string, ip: string): void {
+  // Session
+  sessionLeadCounts.set(sessionId, (sessionLeadCounts.get(sessionId) || 0) + 1);
+
+  // IP
+  const now = Date.now();
+  const ipEntry = ipLeadLimits.get(ip);
+  if (!ipEntry || now - ipEntry.windowStart > ONE_HOUR) {
+    ipLeadLimits.set(ip, { count: 1, windowStart: now });
+  } else {
+    ipEntry.count++;
+  }
+
+  // Global
+  if (now - globalLeadCount.windowStart > ONE_HOUR) {
+    globalLeadCount = { count: 1, windowStart: now };
+  } else {
+    globalLeadCount.count++;
+  }
+}
+
+// ═══════════════════════════════════════════
+// RESEND EMAIL SENDER
+// ═══════════════════════════════════════════
+
 async function sendEmailViaResend(subject: string, body: string): Promise<boolean> {
   const resendKey = Deno.env.get("RESEND_API_KEY");
   if (!resendKey) {
@@ -45,6 +142,41 @@ async function sendEmailViaResend(subject: string, body: string): Promise<boolea
   }
 }
 
+// ═══════════════════════════════════════════
+// ADVOCATE MAP — Practice area → Advocate
+// ═══════════════════════════════════════════
+
+const advocateMap: Record<string, { name: string; phone: string }> = {
+  "Redevelopment / Co-operative Society": { name: "Mr. Sandeep Shukla", phone: "9220473363" },
+  "Family & Matrimonial": { name: "Ms. Neelam S. Shukla", phone: "9479256501" },
+  "Civil / Property": { name: "Mr. B. N. Shukla", phone: "9223438655" },
+  "Criminal": { name: "Mr. Sandeep Shukla", phone: "9220473363" },
+  "Consumer Protection": { name: "Mr. Sandeep Shukla", phone: "9220473363" },
+  "Motor Accident / Insurance": { name: "Mr. Vinayak Shukla", phone: "8655890872" },
+  "RERA": { name: "Mr. Deepak Shukla", phone: "9967713812" },
+  "High Court": { name: "Mr. Deepak Shukla", phone: "9967713812" },
+  "Corporate / Tribunal": { name: "Mr. Deepak Shukla", phone: "9967713812" },
+  "Labour Law": { name: "Mr. Vinayak Shukla", phone: "8655890872" },
+  "Cyber Crime": { name: "Mr. Sandeep Shukla", phone: "9220473363" },
+  "Tax & Revenue": { name: "Mr. Deepak Shukla", phone: "9967713812" },
+  "Constitutional & Public Law": { name: "Mr. Deepak Shukla", phone: "9967713812" },
+  "Banking & Finance": { name: "Mr. B. N. Shukla", phone: "9223438655" },
+  "Senior Citizen": { name: "Ms. Neelam S. Shukla", phone: "9479256501" },
+  "Matrimonial Property": { name: "Ms. Neelam S. Shukla", phone: "9479256501" },
+};
+
+function getAdvocateInfo(practiceArea: string): { name: string; phone: string; display: string } {
+  const advocate = advocateMap[practiceArea];
+  if (advocate) {
+    return { ...advocate, display: `${advocate.name} (${advocate.phone})` };
+  }
+  return { name: "General", phone: "", display: "General — assign as appropriate" };
+}
+
+// ═══════════════════════════════════════════
+// MAIN REQUEST HANDLER
+// ═══════════════════════════════════════════
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -52,6 +184,7 @@ serve(async (req) => {
 
   try {
     const { type, data } = await req.json();
+    const clientIP = getClientIP(req);
 
     const supabaseAdmin = createClient(
       Deno.env.get("SUPABASE_URL")!,
@@ -132,6 +265,17 @@ Advocates, Legal Consultants & Notary Public
         );
       }
 
+      // ── Rate limit check ──
+      const sessionId = data.sessionId || "unknown";
+      const rateCheck = checkLeadLimits(sessionId, clientIP);
+      if (!rateCheck.allowed) {
+        console.warn(`Rate limited: session=${sessionId}, ip=${clientIP}, reason=${rateCheck.reason}`);
+        return new Response(
+          JSON.stringify({ success: false, error: rateCheck.reason, rateLimited: true }),
+          { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
       // Store lead in DB
       const { error: dbError } = await supabaseAdmin
         .from("chat_queries")
@@ -145,28 +289,11 @@ Advocates, Legal Consultants & Notary Public
         console.error("DB insert error:", dbError);
       }
 
-      subject = `🔔 New ${data.practiceArea} Lead via AI Chatbot`;
-      
-      // Map practice area to recommended advocate
-      const advocateMap: Record<string, string> = {
-        "Redevelopment / Co-operative Society": "Mr. Sandeep Shukla (9220473363)",
-        "Family & Matrimonial": "Ms. Neelam S. Shukla (9479256501)",
-        "Civil / Property": "Mr. B. N. Shukla (9223438655)",
-        "Criminal": "Mr. Sandeep Shukla (9220473363)",
-        "Consumer Protection": "Mr. Sandeep Shukla (9220473363)",
-        "Motor Accident / Insurance": "Mr. Vinayak Shukla (8655890872)",
-        "RERA": "Mr. Deepak Shukla (9967713812)",
-        "High Court": "Mr. Deepak Shukla (9967713812)",
-        "Corporate / Tribunal": "Mr. Deepak Shukla (9967713812)",
-        "Labour Law": "Mr. Vinayak Shukla (8655890872)",
-        "Cyber Crime": "Mr. Sandeep Shukla (9220473363)",
-        "Tax & Revenue": "Mr. Deepak Shukla (9967713812)",
-        "Constitutional & Public Law": "Mr. Deepak Shukla (9967713812)",
-        "Banking & Finance": "Mr. B. N. Shukla (9223438655)",
-        "Senior Citizen": "Ms. Neelam S. Shukla (9479256501)",
-        "Matrimonial Property": "Ms. Neelam S. Shukla (9479256501)",
-      };
-      const recommendedAdvocate = advocateMap[data.practiceArea] || "General — assign as appropriate";
+      // Get advocate info for subject line and body
+      const advocate = getAdvocateInfo(data.practiceArea);
+
+      // ── Subject includes advocate name so you know at a glance who gets this lead ──
+      subject = `🔔 New ${data.practiceArea} Lead → ${advocate.name} | AI Chatbot`;
 
       body = `
 <h2>🔔 New Consultation Lead — BNS Legal AI Chatbot</h2>
@@ -175,7 +302,7 @@ Advocates, Legal Consultants & Notary Public
   <tr><td style="padding:8px;font-weight:bold;border-bottom:1px solid #ddd;">Phone</td><td style="padding:8px;border-bottom:1px solid #ddd;"><a href="tel:${data.phone}">${data.phone}</a></td></tr>
   <tr><td style="padding:8px;font-weight:bold;border-bottom:1px solid #ddd;">Email</td><td style="padding:8px;border-bottom:1px solid #ddd;">${data.email || "Not provided"}</td></tr>
   <tr><td style="padding:8px;font-weight:bold;border-bottom:1px solid #ddd;">Practice Area</td><td style="padding:8px;border-bottom:1px solid #ddd;">${data.practiceArea}</td></tr>
-  <tr><td style="padding:8px;font-weight:bold;border-bottom:1px solid #ddd;">Recommended Advocate</td><td style="padding:8px;border-bottom:1px solid #ddd;">${recommendedAdvocate}</td></tr>
+  <tr><td style="padding:8px;font-weight:bold;border-bottom:1px solid #ddd;">Recommended Advocate</td><td style="padding:8px;border-bottom:1px solid #ddd;">${advocate.display}</td></tr>
 </table>
 <h3>Client's Latest Query</h3>
 <p>${data.userMessage}</p>
@@ -186,7 +313,20 @@ Advocates, Legal Consultants & Notary Public
 <p><em>Auto-captured by BNS Legal AI Chatbot</em><br>Session: ${data.sessionId}</p>
       `.trim();
 
+      // Increment rate limit counters AFTER successful processing
+      incrementLeadCounters(sessionId, clientIP);
+
     } else if (type === "chat_query") {
+      // ── Rate limit check for chat messages ──
+      const sessionId = data.sessionId || "unknown";
+      if (!checkSessionChatLimit(sessionId)) {
+        return new Response(
+          JSON.stringify({ success: false, error: "Session message limit reached", rateLimited: true }),
+          { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+      incrementSessionChat(sessionId);
+
       const { error: dbError } = await supabaseAdmin
         .from("chat_queries")
         .insert({

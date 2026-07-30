@@ -715,6 +715,12 @@ const detectPracticeArea = (currentMsg: string, allText: string): string => {
   return classifyPracticeArea(allText);
 };
 
+// Client-side rate limiting constants
+const CLIENT_RATE_LIMITS = {
+  MIN_SEND_INTERVAL_MS: 2000,  // 2 seconds between messages
+  MAX_MESSAGES_PER_SESSION: 50, // Max messages per chat session
+};
+
 const ChatButton = () => {
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<{ role: "user" | "bot" | "assistant"; text: string }[]>([
@@ -730,6 +736,8 @@ const ChatButton = () => {
     email?: string;
   }>({});
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [messageCount, setMessageCount] = useState(0);
+  const lastSendTimeRef = useRef<number>(0);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -780,6 +788,32 @@ const ChatButton = () => {
 
   const handleSend = async () => {
     if (!input.trim() || isLoading) return;
+
+    // ── Client-side rate limiting ──
+    const now = Date.now();
+    const timeSinceLastSend = now - lastSendTimeRef.current;
+
+    if (timeSinceLastSend < CLIENT_RATE_LIMITS.MIN_SEND_INTERVAL_MS) {
+      // Too fast — silently ignore (button is already visually disabled during loading)
+      return;
+    }
+
+    if (messageCount >= CLIENT_RATE_LIMITS.MAX_MESSAGES_PER_SESSION) {
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: "bot",
+          text: "You've reached the maximum number of messages for this session. For further assistance, please call us directly at 9223438655 or email bnslegal01@gmail.com.",
+        },
+      ]);
+      setInput("");
+      return;
+    }
+
+    lastSendTimeRef.current = now;
+    setMessageCount((prev) => prev + 1);
+    // ── End rate limiting ──
+
     const userMsg = input.trim();
     setMessages((prev) => [...prev, { role: "user", text: userMsg }]);
     setInput("");

@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BNS Legal - Home</title>
+    
+    <!-- FIXED: Working CDN links to pull Three.js and GLTFLoader engine scripts -->
+    <script src="https://cloudflare.com"></script>
+    <script src="https://jsdelivr.net"></script>
+    
+    <style>
+        /* Layout Structure Matching BNS Legal Content Grid */
+        body, html { margin: 0; padding: 0; min-height: 100vh; background-color: #0b0c0d; font-family: sans-serif; color: #ffffff; overflow-x: hidden; }
+        .hero-section { display: flex; width: 100vw; min-height: 100vh; position: relative; }
+        
+        /* Left Typography Layout Column */
+        .content-column { width: 45%; padding: 80px 5%; display: flex; flex-direction: column; justify-content: center; z-index: 10; pointer-events: none; }
+        .content-column * { pointer-events: auto; }
+        .brand-sub { font-size: 11px; letter-spacing: 4px; color: #a1824a; text-transform: uppercase; margin-bottom: 20px; }
+        .brand-main { font-size: 72px; line-height: 1.1; margin: 0 0 30px 0; color: #ebd197; font-family: 'Georgia', serif; }
+        .brand-desc { font-size: 16px; line-height: 1.6; color: #b5b7ba; max-width: 420px; margin-bottom: 40px; }
+        .btn-gold { background: #ebd197; color: #0b0c0d; border: none; padding: 16px 32px; font-weight: bold; letter-spacing: 2px; text-transform: uppercase; font-size: 13px; cursor: pointer; transition: background 0.2s; max-width: 280px; text-align: center; }
+        .btn-gold:hover { background: #d7bc83; }
+
+        /* Right Column: 3D Viewport Area */
+        .canvas-column { width: 55%; height: 100vh; position: relative; background: radial-gradient(circle at center, #1b1d20 0%, #0b0c0d 70%); }
+        #canvas-container { width: 100%; height: 100%; position: absolute; top: 0; left: 0; }
+
+        /* Custom Interactive Range Controller Slider */
+        #control-panel { position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%); z-index: 20; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+        #control-panel label { color: rgba(235,209,151,0.6); font-size: 11px; letter-spacing: 2px; text-transform: uppercase; user-select: none; }
+        .slider-wrapper { display: flex; align-items: center; background: rgba(0,0,0,0.6); padding: 8px 16px; border-radius: 50px; border: 1px solid rgba(235,209,151,0.2); backdrop-filter: blur(5px); }
+        input[type="range"] { -webkit-appearance: none; width: 200px; background: rgba(255,255,255,0.2); height: 3px; outline: none; }
+        input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%; background: #ebd197; cursor: grab; }
+        input[type="range"]::-webkit-slider-thumb:active { cursor: grabbing; transform: scale(1.1); }
+    </style>
+</head>
+<body>
+
+    <main class="hero-section">
+        <!-- Text Columns Components -->
+        <section class="content-column">
+            <div class="brand-sub">Established 1988</div>
+            <h1 class="brand-main">BNS<br>Legal</h1>
+            <p class="brand-desc">Relentless advocacy. Unwavering integrity. Justice is not just our practice — it's our promise.</p>
+            <button class="btn-gold">Schedule a Consultation</button>
+        </section>
+
+        <!-- Right Side Viewport Window Area -->
+        <section class="canvas-column">
+            <div id="canvas-container"></div>
+            <div id="control-panel">
+                <label>Hold & Move Statue</label>
+                <div class="slider-wrapper">
+                    <input type="range" id="rotation-slider" min="-180" max="180" value="0">
+                </div>
+            </div>
+        </section>
+    </main>
+
+<script>
+const container = document.getElementById('canvas-container');
+const slider = document.getElementById('rotation-slider');
+
+// 1. Setup Three.js environment locally inside the right-side box columns
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(40, container.clientWidth / container.clientHeight, 0.1, 1000);
+const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+renderer.setSize(container.clientWidth, container.clientHeight);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+container.appendChild(renderer.domElement);
+
+// Smooth Studio Lighting Setup
+scene.add(new THREE.AmbientLight(0xffffff, 0.6));
+const keyLight = new THREE.DirectionalLight(0xfff3d1, 1.8);
+keyLight.position.set(5, 8, 5);
+scene.add(keyLight);
+
+const fillLight = new THREE.DirectionalLight(0x8fa3ff, 0.5);
+fillLight.position.set(-5, 3, -2);
+scene.add(fillLight);
+
+// 2. Load the 7.7MB Asset
+const loader = new THREE.GLTFLoader();
+let statue = null;
+
+loader.load('scene-v1.glb', (gltf) => {
+    statue = gltf.scene;
+    
+    // Materials processing config to highlight the golden/bronze reflection textures
+    statue.traverse((child) => {
+        if (child.isMesh) {
+            child.material.roughness = 0.25;
+            child.material.metalness = 0.9;
+        }
+    });
+
+    const box = new THREE.Box3().setFromObject(statue);
+    const center = box.getCenter(new THREE.Vector3());
+    statue.position.x += (statue.position.x - center.x);
+    statue.position.y += (statue.position.y - center.y) - 0.5; // Centers base height evenly
+    statue.position.z += (statue.position.z - center.z);
+    
+    scene.add(statue);
+    camera.position.set(0, 0, 5.5); 
+});
+
+// 3. Setup Interactive State Metrics
+let isUserInteracting = false;
+let targetRotationY = 0;
+let currentRotationY = 0;
+const lerpFactor = 0.06;      // Kinetic drag friction delay coefficient
+const autoplaySpeed = 0.003;  // Paced idle rotation speed config value
+
+// Listens for active mouse-hold drag execution parameters over the input track element
+slider.addEventListener('input', (e) => {
+    isUserInteracting = true;
+    // Map tracking angles natively to ThreeJS viewport rotation variables (radians)
+    targetRotationY = (parseFloat(e.target.value) * Math.PI) / 180;
+});
+
+// Checks for release pointer events to return smoothly back to auto looping
+slider.addEventListener('change', () => {
+    isUserInteracting = false;
+    // Pickup the default tracking vectors directly from where user dropped it
+    targetRotationY = statue ? statue.rotation.y : 0; 
+    slider.value = 0; // Elastic reset of the visual tracking bar back to middle slot
+});
+
+slider.addEventListener('mouseup', () => { isUserInteracting = false; });
+slider.addEventListener('touchend', () => { isUserInteracting = false; });
+
+// 4. Infinite Frame Update Loop Engine
+function animate() {
+    requestAnimationFrame(animate);
+
+    if (statue) {
+        if (!isUserInteracting) {
+            // STEP A: Default state auto loops continuous rotation from left to right
+            statue.rotation.y += autoplaySpeed;
+            targetRotationY = statue.rotation.y;
+            currentRotationY = statue.rotation.y;
+        } else {
+            // STEP B: Override loop when clicking the hold container button element
+            currentRotationY += (targetRotationY - currentRotationY) * lerpFactor;
+            statue.rotation.y = currentRotationY;
+        }
+        
+        // Block top/bottom or perspective tilting entirely
+        statue.rotation.x = 0;
+        statue.rotation.z = 0;
+    }
+
+    renderer.render(scene, camera);
+}
+animate();
+
+// 5. Adapt to Screen Resize Configurations
+window.addEventListener('resize', () => {
+    camera.aspect = container.clientWidth / container.clientHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(container.clientWidth, container.clientHeight);
+});
+</script>
+</body>
+</html>

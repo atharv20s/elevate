@@ -1,6 +1,6 @@
 import { motion, useScroll, useTransform } from "framer-motion";
-import { useRef } from "react";
-import justiceStatue from "@/assets/justice-statue.png";
+import { useRef, Suspense } from "react";
+import ThreeStatue from "@/components/ThreeStatue";
 
 const HeroSection = () => {
   const ref = useRef<HTMLDivElement>(null);
@@ -34,26 +34,32 @@ const HeroSection = () => {
         }}
       />
 
-      {/* Background image - positioned right - PROMINENT */}
-      <div className="absolute right-0 top-0 w-full md:w-2/3 h-full flex items-end md:items-center justify-end z-5">
+      {/* 3D statue viewport – replaces the static image */}
+      <div
+        className="absolute right-0 top-0 w-full md:w-[60%] h-full z-5"
+      >
         <motion.div className="w-full h-full" style={{ opacity }}>
-          <img
-            src={justiceStatue}
-            alt="Lady Justice statue in bronze, blindfolded, holding scales and sword"
-            className="w-full h-full object-contain md:object-cover object-right brightness-125 contrast-120 saturate-125 drop-shadow-2xl"
-          />
+          <Suspense
+            fallback={
+              <div className="w-full h-full flex items-center justify-center">
+                <div className="w-10 h-10 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
+              </div>
+            }
+          >
+            <ThreeStatue />
+          </Suspense>
         </motion.div>
       </div>
 
-      {/* Text content - glassmorphic container */}
-      <div className="relative z-20 w-full md:w-1/2 py-16 md:py-24">
-        <div className="max-w-xl pl-0 md:pl-12 lg:pl-16">
+      {/* Text content */}
+      <div className="relative z-20 w-full md:w-[45%] py-12 md:py-16 flex items-center">
+        <div className="max-w-xl pl-4 md:pl-12 lg:pl-16">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
           >
-            <p className="font-body text-primary tracking-[0.35em] uppercase text-xs mb-8 drop-shadow-lg">
+            <p className="font-body text-primary tracking-[0.35em] uppercase text-[11px] mb-4 drop-shadow-lg">
               Established 1988
             </p>
           </motion.div>
@@ -62,7 +68,7 @@ const HeroSection = () => {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.4 }}
-            className="font-display text-5xl md:text-6xl lg:text-7xl font-bold leading-[0.95] mb-8 text-primary drop-shadow-2xl italic font-serif"
+            className="font-display text-6xl md:text-8xl lg:text-9xl font-bold leading-[0.88] mb-4 text-primary drop-shadow-2xl italic font-serif"
           >
             BNS
             <br />
@@ -72,15 +78,24 @@ const HeroSection = () => {
           <motion.div
             initial={{ scaleX: 0 }}
             animate={{ scaleX: 1 }}
-            transition={{ duration: 0.8, delay: 0.6 }}
-            className="w-24 h-[2px] bg-gradient-to-r from-primary to-primary/40 mb-10 origin-left"
+            transition={{ duration: 0.8, delay: 0.55 }}
+            className="w-20 h-[2px] bg-gradient-to-r from-primary to-primary/40 mb-5 origin-left"
           />
+
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.8, delay: 0.6 }}
+            className="font-body text-sm md:text-base uppercase tracking-[0.2em] text-foreground/50 mb-6"
+          >
+            Senior Advocate B. N. Shukla
+          </motion.p>
 
           <motion.p
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8, delay: 0.7 }}
-            className="font-body text-base md:text-lg leading-relaxed text-foreground/90 drop-shadow-lg mb-12 max-w-lg"
+            className="font-body text-base md:text-lg leading-relaxed text-foreground/85 drop-shadow-lg mb-8 max-w-md"
           >
             Relentless advocacy. Unwavering integrity.
             <br />
@@ -91,7 +106,7 @@ const HeroSection = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.9 }}
-            className="flex flex-col gap-4 w-fit"
+            className="flex flex-col sm:flex-row gap-3 w-fit mb-10"
           >
             <a
               href="#contact"
@@ -105,6 +120,21 @@ const HeroSection = () => {
             >
               Our Practice Areas
             </a>
+          </motion.div>
+
+          {/* Accent tagline to fill bottom space */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 1, delay: 1.2 }}
+            className="flex items-center gap-3"
+          >
+            <div className="w-[2px] h-8 bg-gradient-to-b from-primary/60 to-transparent" />
+            <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground leading-relaxed">
+              Defenders of Justice
+              <br />
+              <span className="text-primary/50">Since Three Decades</span>
+            </p>
           </motion.div>
         </div>
       </div>
