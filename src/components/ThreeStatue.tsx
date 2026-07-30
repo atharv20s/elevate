@@ -203,8 +203,8 @@ export default function ThreeStatue() {
       ref={containerRef}
       className="w-full h-full relative"
       initial={{ opacity: 0 }}
-      animate={{ opacity: loaded ? 1 : 0 }}
-      transition={{ duration: 1.6, ease: "easeOut" }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.8, ease: "easeOut" }}
       style={{ cursor: isDragging ? "grabbing" : "grab" }}
       onPointerDown={onPointerDown}
       onPointerMove={onPointerMove}
