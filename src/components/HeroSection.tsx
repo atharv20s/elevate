@@ -16,27 +16,41 @@ const HeroSection = () => {
       ref={ref}
       className="relative min-h-screen flex items-center overflow-hidden pt-20 px-6 md:px-0"
       style={{
-        background: "linear-gradient(135deg, hsl(220 20% 6%) 0%, hsl(220 15% 14%) 50%, hsl(220 12% 20%) 100%)",
+        background: "radial-gradient(circle at 70% 30%, #1a202c 0%, #0f172a 60%, #020617 100%)",
       }}
     >
-      {/* Glassmorphic ambient background */}
+      {/* Studio backdrop mesh layers */}
       <div className="absolute inset-0 z-0">
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/3 to-transparent" />
+        <div
+          className="absolute inset-0"
+          style={{
+            background: "radial-gradient(at 0% 0%, hsl(210 10% 15%) 0px, transparent 50%), radial-gradient(at 100% 100%, hsl(210 15% 8%) 0px, transparent 50%)",
+          }}
+        />
         <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-primary/5 rounded-full blur-3xl" />
         <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-primary/3 rounded-full blur-3xl" />
+        {/* Noise overlay for premium tactile feel */}
+        <div
+          className="absolute inset-0 opacity-[0.03]"
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
+            backgroundRepeat: "repeat",
+            backgroundSize: "128px 128px",
+          }}
+        />
       </div>
 
       {/* Subtle left side overlay for text contrast only */}
       <div
-        className="absolute left-0 top-0 w-full md:w-1/3 h-full z-10 pointer-events-none"
+        className="absolute left-0 top-0 w-full md:w-[40%] h-full z-10 pointer-events-none"
         style={{
-          background: "linear-gradient(to right, hsl(220 20% 6% / 0.85) 0%, hsl(220 20% 6% / 0.5) 80%, transparent 100%)",
+          background: "linear-gradient(to right, #020617 0%, rgba(2,6,23,0.7) 60%, transparent 100%)",
         }}
       />
 
       {/* 3D statue viewport – replaces the static image */}
       <div
-        className="absolute right-0 top-0 w-full md:w-[60%] h-full z-5"
+        className="absolute right-0 top-0 w-full md:w-[75%] h-full z-5"
       >
         <motion.div className="w-full h-full" style={{ opacity }}>
           <Suspense

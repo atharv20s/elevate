@@ -18,7 +18,7 @@ const FirmSection = () => {
       ref={ref}
       className="py-24 md:py-32"
       style={{
-        background: "linear-gradient(135deg, hsl(220 20% 8%) 0%, hsl(220 18% 12%) 100%)",
+        background: "radial-gradient(ellipse at 30% 50%, #1a202c 0%, #0f172a 50%, #020617 100%)",
       }}
     >
       <div className="max-w-6xl mx-auto px-6">

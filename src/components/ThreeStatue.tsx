@@ -47,7 +47,7 @@ function StatueModel({ dragDeltaX, isDragging, onLoaded }: StatueModelProps) {
 
     // Scale model to fill viewport — target ~3 units tall
     const maxDim = Math.max(size.x, size.y, size.z);
-    const desiredHeight = 2.6;
+    const desiredHeight = 3.8;
     const scaleFactor = desiredHeight / maxDim;
     scene.scale.setScalar(scaleFactor);
 
@@ -57,7 +57,7 @@ function StatueModel({ dragDeltaX, isDragging, onLoaded }: StatueModelProps) {
     }
   }, [scene, onLoaded]);
 
-  const AUTOPLAY_SPEED = 0.002;
+  const AUTOPLAY_SPEED = 0.005;
   const LERP_FACTOR = 0.08;
 
   useFrame(() => {
@@ -129,10 +129,10 @@ function StudioLights() {
 /* ── Camera ── */
 function CameraSetup({ zoom }: { zoom: number }) {
   const { camera } = useThree();
-  const targetZ = useRef(5.5);
+  const targetZ = useRef(3.8);
 
   useEffect(() => {
-    camera.position.set(0, 0.2, 5.5);
+    camera.position.set(0, 0.15, 3.8);
     camera.lookAt(0, 0.1, 0);
   }, [camera]);
 
@@ -156,7 +156,7 @@ export default function ThreeStatue() {
   const [loaded, setLoaded] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [dragDeltaX, setDragDeltaX] = useState(0);
-  const [cameraZ, setCameraZ] = useState(5.5);
+  const [cameraZ, setCameraZ] = useState(3.8);
   const lastPointerX = useRef(0);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -170,7 +170,7 @@ export default function ThreeStatue() {
       e.preventDefault();
       setCameraZ((prev) => {
         const next = prev + e.deltaY * 0.004;
-        return Math.max(4.0, Math.min(7.0, next)); // tighter clamp to prevent overflow
+        return Math.max(3.0, Math.min(6.0, next)); // tighter clamp to prevent overflow
       });
     };
     el.addEventListener("wheel", onWheel, { passive: false });
@@ -214,7 +214,7 @@ export default function ThreeStatue() {
       <Canvas
         shadows
         gl={{ alpha: true, antialias: true, powerPreference: "high-performance" }}
-        camera={{ fov: 50, near: 0.1, far: 1000 }}
+        camera={{ fov: 45, near: 0.1, far: 1000 }}
         style={{ width: "100%", height: "100%", position: "absolute", inset: 0 }}
       >
         <CameraSetup zoom={cameraZ} />
