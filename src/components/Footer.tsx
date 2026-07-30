@@ -13,7 +13,7 @@ const Footer = () => (
         Advocates, Legal Consultants & Notary Public — Registered with Bar Council of Maharashtra & Goa
       </p>
       <p className="font-mono text-xs text-muted-foreground/60 tracking-wider">
-        © 2025 BNS Legal. All rights reserved.
+        © 2026 BNS Legal. All rights reserved.
       </p>
     </div>
   </footer>

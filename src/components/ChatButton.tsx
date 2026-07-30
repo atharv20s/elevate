@@ -724,7 +724,7 @@ const CLIENT_RATE_LIMITS = {
 const ChatButton = () => {
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<{ role: "user" | "bot" | "assistant"; text: string }[]>([
-    { role: "bot", text: "Welcome to BNS Legal! 👋\n\nEstablished in 1988 with 35+ years of legal excellence. How can I help you today?\n\nTell me about your legal matter and share your name & phone number — our advocates will reach out for a free consultation.\n\nYou can ask about:\n• Our practice areas & expertise\n• Schedule a free consultation\n• Office locations & contact\n• Any legal matter you're facing" },
+    { role: "bot", text: "Welcome to BNS Legal! 👋\n\nEstablished in 1988 with 35+ years of legal excellence. How can I help you today?\n\nTell me about your legal matter and share your name & phone number — our advocates will reach out for a free consultation.\n\nYou can ask about:\n• Our practice areas & expertise\n• Schedule a free consultation\n• Office locations & contact\n\nOr click here to [Chat with us on WhatsApp](https://api.whatsapp.com/send/?phone=919223438655&text=Hello+BNS+Legal%2C+I+need+a+consultation&type=phone_number&app_absent=0)" },
   ]);
   const [input, setInput] = useState("");
   const [sessionId] = useState(() => crypto.randomUUID());
@@ -861,6 +861,25 @@ const ChatButton = () => {
               },
             },
           });
+          
+          // Construct the WhatsApp URL with current lead data
+          const queryText = `Hi BNS Legal! I need a consultation.
+Name: ${updatedLead.name || "Not provided"}
+Phone: ${updatedLead.phone}
+Email: ${updatedLead.email || "Not provided"}
+Query: ${userMsg}`;
+          
+          const encodedQuery = encodeURIComponent(queryText);
+          const whatsappUrl = `https://api.whatsapp.com/send/?phone=919967713812&text=${encodedQuery}&type=phone_number&app_absent=0`;
+          
+          setMessages((prev) => [
+            ...prev, 
+            { 
+              role: "bot", 
+              text: `Thanks for sharing your details! I've notified our team.\n\nFor faster assistance, you can click here to [forward your query directly to our WhatsApp](${whatsappUrl})` 
+            }
+          ]);
+
         } catch (leadErr) {
           console.error("Failed to submit lead:", leadErr);
         }
@@ -920,9 +939,14 @@ const ChatButton = () => {
                     msg.role === "user" 
                       ? "bg-primary text-primary-foreground" 
                       : "bg-secondary text-foreground"
-                  }`}>
-                    {msg.text}
-                  </div>
+                  }`}
+                  dangerouslySetInnerHTML={{
+                    __html: msg.text.replace(
+                      /\[([^\]]+)\]\(([^)]+)\)/g,
+                      '<a href="$2" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline font-medium">$1</a>'
+                    )
+                  }}
+                  />
                 </div>
               ))}
               {isLoading && (

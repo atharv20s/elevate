@@ -1,6 +1,7 @@
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
-import { Scale, Shield, Gavel, FileText, Users, Building2, Briefcase, Home, Landmark, HardHat } from "lucide-react";
+import { Scale, Shield, Gavel, FileText, Users, Building2, Briefcase, Home, Landmark } from "lucide-react";
+import ScrollStoryWrapper from "./ScrollStoryWrapper";
 
 const areas = [
   { icon: Scale, title: "Civil Litigation", desc: "Property disputes, co-operative society matters, redevelopment issues, RERA, NCLT, DRT, Rent Act matters, injunctions, and recovery." },
@@ -12,15 +13,43 @@ const areas = [
   { icon: Gavel, title: "Corporate & Tribunal", desc: "NCLT, DRT, RERA, Arbitration Panels, corporate restructuring, and compliance issues." },
   { icon: Briefcase, title: "Legal Advisory", desc: "Drafting of agreements, contracts, notices, affidavits, deeds, and comprehensive legal opinions." },
   { icon: Home, title: "Redevelopment", desc: "End-to-end legal support for co-operative housing society redevelopment — title verification to dispute resolution." },
-  { icon: HardHat, title: "Labour Laws", desc: "Comprehensive advisory, compliance, and litigation support in Labour & Employment Laws." },
 ];
 
-const PracticeSection = () => {
-  const ref = useRef<HTMLDivElement>(null);
-  const inView = useInView(ref, { once: true, margin: "-100px" });
+// Split into rows of 3
+const rows = [areas.slice(0, 3), areas.slice(3, 6), areas.slice(6, 9)];
 
+const rowVariants = {
+  hidden: { opacity: 0, y: 60, scale: 0.96 },
+  visible: {
+    opacity: 1, y: 0, scale: 1,
+    transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] },
+  },
+};
+
+const RowReveal = ({ children }: { children: React.ReactNode }) => {
+  const ref = useRef<HTMLDivElement>(null);
+  const inView = useInView(ref, { once: true, margin: "-80px 0px" });
   return (
-    <section id="practice" ref={ref} className="py-24 md:py-32 bg-background relative overflow-hidden">
+    <motion.div
+      ref={ref}
+      variants={rowVariants}
+      initial="hidden"
+      animate={inView ? "visible" : "hidden"}
+    >
+      {children}
+    </motion.div>
+  );
+};
+
+const PracticeSection = () => (
+  <ScrollStoryWrapper
+    id="practice"
+    chapter="Chapter I"
+    chapterTitle="Expertise"
+    animationType="fade-up"
+    className="py-24 md:py-32 bg-background relative overflow-hidden"
+  >
+    <div>
       {/* Glassmorphic ambient background */}
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute inset-0 bg-gradient-to-b from-primary/3 via-transparent to-primary/2" />
@@ -28,12 +57,7 @@ const PracticeSection = () => {
         <div className="absolute bottom-0 right-0 w-[700px] h-[700px] bg-primary/4 rounded-full blur-3xl" />
       </div>
       <div className="max-w-6xl mx-auto px-6 relative z-10">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.8 }}
-          className="text-center mb-16"
-        >
+        <div className="text-center mb-16">
           <p className="text-[hsl(var(--gold-dark))] font-body text-sm uppercase tracking-[0.3em] mb-4">
             Expertise
           </p>
@@ -41,30 +65,34 @@ const PracticeSection = () => {
             Practice Areas
           </h2>
           <div className="w-24 h-[2px] bg-gradient-to-r from-primary to-primary/40 mx-auto" />
-        </motion.div>
+        </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {areas.map((area, i) => (
-            <motion.div
-              key={area.title}
-              initial={{ opacity: 0, y: 30 }}
-              animate={inView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.5, delay: 0.1 + i * 0.08 }}
-              className="group p-8 border border-border bg-card hover:border-primary/40 transition-all duration-500 hover:shadow-lg"
-            >
-              <area.icon className="w-8 h-8 text-primary mb-5 transition-transform duration-300 group-hover:scale-110" />
-              <h3 className="font-display text-xl font-semibold text-card-foreground mb-3">
-                {area.title}
-              </h3>
-              <p className="font-body text-muted-foreground text-sm leading-relaxed">
-                {area.desc}
-              </p>
-            </motion.div>
+        {/* Each row animates in on its own when it enters the viewport */}
+        <div className="flex flex-col gap-5 md:gap-8">
+          {rows.map((row, rowIdx) => (
+            <RowReveal key={rowIdx}>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-8">
+                {row.map((area) => (
+                  <div
+                    key={area.title}
+                    className="group p-6 md:p-8 border border-border bg-card hover:border-primary/40 transition-all duration-500 hover:shadow-lg h-full"
+                  >
+                    <area.icon className="w-8 h-8 text-primary mb-5 transition-transform duration-300 group-hover:scale-110" />
+                    <h3 className="font-display text-xl font-semibold text-card-foreground mb-3">
+                      {area.title}
+                    </h3>
+                    <p className="font-body text-muted-foreground text-sm leading-relaxed">
+                      {area.desc}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </RowReveal>
           ))}
         </div>
       </div>
-    </section>
-  );
-};
+    </div>
+  </ScrollStoryWrapper>
+);
 
 export default PracticeSection;
