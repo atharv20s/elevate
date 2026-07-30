@@ -47,7 +47,7 @@ function StatueModel({ dragDeltaX, isDragging, onLoaded }: StatueModelProps) {
 
     // Scale model to fill viewport — target ~3 units tall
     const maxDim = Math.max(size.x, size.y, size.z);
-    const desiredHeight = 3.2;
+    const desiredHeight = 3.5;
     const scaleFactor = desiredHeight / maxDim;
     scene.scale.setScalar(scaleFactor);
 
@@ -129,11 +129,11 @@ function StudioLights() {
 /* ── Camera ── */
 function CameraSetup({ zoom }: { zoom: number }) {
   const { camera } = useThree();
-  const targetZ = useRef(4.2);
+  const targetZ = useRef(4.1);
 
   useEffect(() => {
-    camera.position.set(0, 0.15, 4.2);
-    camera.lookAt(0, 0.1, 0);
+    camera.position.set(0.2, 0.05, 4.1);
+    camera.lookAt(0.2, 0, 0);
   }, [camera]);
 
   useEffect(() => {
@@ -142,7 +142,7 @@ function CameraSetup({ zoom }: { zoom: number }) {
 
   useFrame(() => {
     camera.position.z += (targetZ.current - camera.position.z) * 0.08;
-    camera.lookAt(0, 0.1, 0);
+    camera.lookAt(0.2, 0, 0);
   });
 
   return null;
@@ -156,7 +156,7 @@ export default function ThreeStatue() {
   const [loaded, setLoaded] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [dragDeltaX, setDragDeltaX] = useState(0);
-  const [cameraZ, setCameraZ] = useState(4.2);
+  const [cameraZ, setCameraZ] = useState(4.1);
   const lastPointerX = useRef(0);
   const containerRef = useRef<HTMLDivElement>(null);
 
