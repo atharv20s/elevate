@@ -7,7 +7,7 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-const TARGET_EMAIL = "bnslegal01@gmail.com";
+const TARGET_EMAIL = "support.bnslegal@gmail.com";
 
 // ═══════════════════════════════════════════
 // RATE LIMITING — Prevent DDoS / email spam
@@ -211,10 +211,11 @@ serve(async (req) => {
         throw new Error("Failed to save consultation request");
       }
 
-      subject = `New Consultation Request from ${data.firstName} ${data.lastName}`;
+      const clientName = `${data.firstName || ''} ${data.lastName || ''}`.trim() || "Visitor";
+      subject = `[TASK TYPE- CONSULTATION REQUEST] - ${clientName}`;
       body = `
 <h2>New Consultation Request — BNS Legal Website</h2>
-<p><strong>Name:</strong> ${data.firstName} ${data.lastName}</p>
+<p><strong>Name:</strong> ${clientName}</p>
 <p><strong>Email:</strong> ${data.email}</p>
 <p><strong>Phone:</strong> ${data.phone}</p>
 <p><strong>Legal Matter:</strong> ${data.message || "Not specified"}</p>
@@ -239,21 +240,19 @@ serve(async (req) => {
         throw new Error("Failed to save internship application");
       }
 
-      subject = `New Internship Application from ${data.fullName}`;
+      const clientName = data.fullName || "Applicant";
+      subject = `[TASK TYPE- INTERN APPLICATION] - ${clientName}`;
       body = `
-New internship application received on BNS Legal website.
-
-Name: ${data.fullName}
-Email: ${data.email}
-Phone: ${data.phone}
-College: ${data.college}
-Year of Study: ${data.yearOfStudy}
-Area of Interest: ${data.areaOfInterest}
-Message: ${data.message || "Not specified"}
-
----
-BNS LEGAL - Justice for All
-Advocates, Legal Consultants & Notary Public
+<h2>New Internship Application — BNS Legal Website</h2>
+<p><strong>Name:</strong> ${clientName}</p>
+<p><strong>Email:</strong> ${data.email}</p>
+<p><strong>Phone:</strong> ${data.phone}</p>
+<p><strong>College:</strong> ${data.college}</p>
+<p><strong>Year of Study:</strong> ${data.yearOfStudy}</p>
+<p><strong>Area of Interest:</strong> ${data.areaOfInterest}</p>
+<p><strong>Message:</strong> ${data.message || "Not specified"}</p>
+<hr>
+<p><em>BNS LEGAL - Justice for All<br>Advocates, Legal Consultants & Notary Public</em></p>
       `.trim();
     } else if (type === "chat_lead") {
       // High-priority lead from chatbot - user shared phone number
@@ -291,14 +290,14 @@ Advocates, Legal Consultants & Notary Public
 
       // Get advocate info for subject line and body
       const advocate = getAdvocateInfo(data.practiceArea);
+      const clientName = data.name || "Visitor";
 
-      // ── Subject includes advocate name so you know at a glance who gets this lead ──
-      subject = `🔔 New ${data.practiceArea} Lead → ${advocate.name} | AI Chatbot`;
+      subject = `[TASK TYPE- AI CHAT] - ${clientName}`;
 
       body = `
 <h2>🔔 New Consultation Lead — BNS Legal AI Chatbot</h2>
 <table style="border-collapse:collapse;width:100%;max-width:500px;">
-  <tr><td style="padding:8px;font-weight:bold;border-bottom:1px solid #ddd;">Client Name</td><td style="padding:8px;border-bottom:1px solid #ddd;">${data.name || "Not provided"}</td></tr>
+  <tr><td style="padding:8px;font-weight:bold;border-bottom:1px solid #ddd;">Client Name</td><td style="padding:8px;border-bottom:1px solid #ddd;">${clientName}</td></tr>
   <tr><td style="padding:8px;font-weight:bold;border-bottom:1px solid #ddd;">Phone</td><td style="padding:8px;border-bottom:1px solid #ddd;"><a href="tel:${data.phone}">${data.phone}</a></td></tr>
   <tr><td style="padding:8px;font-weight:bold;border-bottom:1px solid #ddd;">Email</td><td style="padding:8px;border-bottom:1px solid #ddd;">${data.email || "Not provided"}</td></tr>
   <tr><td style="padding:8px;font-weight:bold;border-bottom:1px solid #ddd;">Practice Area</td><td style="padding:8px;border-bottom:1px solid #ddd;">${data.practiceArea}</td></tr>
@@ -341,15 +340,17 @@ Advocates, Legal Consultants & Notary Public
 
       // Only email if it looks like a real inquiry
       if (data.shouldEmail) {
-        subject = `New Chat Query on BNS Legal Website`;
+        const clientName = data.name || "Visitor";
+        subject = `[TASK TYPE- AI CHAT] - ${clientName}`;
         body = `
-A visitor asked a question via the chatbot on BNS Legal website.
-
-User's Question: ${data.userMessage}
-Bot Response: ${data.botResponse}
-
----
-BNS LEGAL - Justice for All
+<h2>New Chat Query — BNS Legal Website</h2>
+<p><strong>Client Name:</strong> ${clientName}</p>
+<p><strong>Email:</strong> ${data.email || "Not provided"}</p>
+<p><strong>Phone:</strong> ${data.phone || "Not provided"}</p>
+<p><strong>User's Question:</strong> ${data.userMessage}</p>
+<p><strong>Bot Response:</strong> ${data.botResponse}</p>
+<hr>
+<p><em>BNS LEGAL - Justice for All</em></p>
         `.trim();
       } else {
         return new Response(

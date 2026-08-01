@@ -721,11 +721,24 @@ const CLIENT_RATE_LIMITS = {
   MAX_MESSAGES_PER_SESSION: 50, // Max messages per chat session
 };
 
+// ── Pre-chat registration form ──────────────────────────────────────────
+interface UserInfo {
+  name: string;
+  email: string;
+  phone: string;
+}
+
+const PhoneRegex = /^\d{10}$/;
+const EmailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 const ChatButton = () => {
   const [open, setOpen] = useState(false);
-  const [messages, setMessages] = useState<{ role: "user" | "bot" | "assistant"; text: string }[]>([
-    { role: "bot", text: "Welcome to BNS Legal! 👋\n\nEstablished in 1988 with 35+ years of legal excellence. How can I help you today?\n\nTell me about your legal matter and share your name & phone number — our advocates will reach out for a free consultation.\n\nYou can ask about:\n• Our practice areas & expertise\n• Schedule a free consultation\n• Office locations & contact\n\nOr click here to [Chat with us on WhatsApp](https://api.whatsapp.com/send/?phone=919223438655&text=Hello+BNS+Legal%2C+I+need+a+consultation&type=phone_number&app_absent=0)" },
-  ]);
+  const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
+  const [regFields, setRegFields] = useState({ name: "", email: "", phone: "" });
+  const [regErrors, setRegErrors] = useState({ name: "", email: "", phone: "" });
+  const [regLoading, setRegLoading] = useState(false);
+
+  const [messages, setMessages] = useState<{ role: "user" | "bot" | "assistant"; text: string }[]>([]);
   const [input, setInput] = useState("");
   const [sessionId] = useState(() => crypto.randomUUID());
   const [isLoading, setIsLoading] = useState(false);
@@ -742,6 +755,42 @@ const ChatButton = () => {
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
+
+  // When userInfo is set for the first time, show the greeting
+  useEffect(() => {
+    if (userInfo && messages.length === 0) {
+      setMessages([
+        {
+          role: "bot",
+          text: `Welcome, ${userInfo.name}! 👋\n\nWelcome to BNS Legal — established in 1988 with 35+ years of legal excellence.\n\nHow can I help you today? Tell me about your legal matter and our advocates will reach out for a free consultation.\n\nYou can ask about:\n• Our practice areas & expertise\n• Schedule a free consultation\n• Office locations & contact\n\nOr click here to [Chat with us on WhatsApp](https://api.whatsapp.com/send/?phone=919223438655&text=Hello+BNS+Legal%2C+I+need+a+consultation&type=phone_number&app_absent=0)`,
+        },
+      ]);
+    }
+  }, [userInfo]);
+
+  const validateReg = () => {
+    const errs = { name: "", email: "", phone: "" };
+    let ok = true;
+    if (!regFields.name.trim()) { errs.name = "Name is required"; ok = false; }
+    if (!EmailRegex.test(regFields.email.trim())) { errs.email = "Enter a valid email address"; ok = false; }
+    if (!PhoneRegex.test(regFields.phone.replace(/\D/g, ""))) { errs.phone = "Enter a 10-digit phone number"; ok = false; }
+    setRegErrors(errs);
+    return ok;
+  };
+
+  const handleStartChat = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!validateReg()) return;
+    setRegLoading(true);
+    const info: UserInfo = {
+      name: regFields.name.trim(),
+      email: regFields.email.trim(),
+      phone: regFields.phone.replace(/\D/g, ""),
+    };
+    setUserInfo(info);
+    setCollectedLead({ name: info.name, email: info.email, phone: info.phone });
+    setRegLoading(false);
+  };
 
   const callOpenRouterAPI = async (userMessage: string): Promise<string> => {
     try {
@@ -787,14 +836,13 @@ const ChatButton = () => {
   };
 
   const handleSend = async () => {
-    if (!input.trim() || isLoading) return;
+    if (!input.trim() || isLoading || !userInfo) return;
 
     // ── Client-side rate limiting ──
     const now = Date.now();
     const timeSinceLastSend = now - lastSendTimeRef.current;
 
     if (timeSinceLastSend < CLIENT_RATE_LIMITS.MIN_SEND_INTERVAL_MS) {
-      // Too fast — silently ignore (button is already visually disabled during loading)
       return;
     }
 
@@ -803,7 +851,7 @@ const ChatButton = () => {
         ...prev,
         {
           role: "bot",
-          text: "You've reached the maximum number of messages for this session. For further assistance, please call us directly at 9223438655 or email bnslegal01@gmail.com.",
+          text: `You've reached the maximum number of messages for this session. For further assistance, please call us directly at 9223438655 or email support.bnslegal@gmail.com.`,
         },
       ]);
       setInput("");
@@ -819,15 +867,20 @@ const ChatButton = () => {
     setInput("");
     setIsLoading(true);
 
-    // Detect contact details from user message
+    // Detect contact details from user message (can still supplement userInfo)
     const phone = extractPhone(userMsg);
     const email = extractEmail(userMsg);
     const name = extractName(userMsg);
     const allText = messages.map(m => m.text).join(" ") + " " + userMsg;
     const practiceArea = detectPracticeArea(userMsg, allText);
 
-    // Accumulate lead info across messages
-    const updatedLead = { ...collectedLead };
+    // Accumulate lead info — always start from registered userInfo
+    const updatedLead = {
+      name: userInfo.name,
+      email: userInfo.email,
+      phone: userInfo.phone,
+      ...collectedLead,
+    };
     if (phone) updatedLead.phone = phone;
     if (email) updatedLead.email = email;
     if (name) updatedLead.name = name;
@@ -837,13 +890,11 @@ const ChatButton = () => {
       const botResponse = await callOpenRouterAPI(userMsg);
       setMessages((prev) => [...prev, { role: "assistant", text: botResponse }]);
 
-      // Auto-submit lead when we have phone AND this practice area hasn't been reported yet
-      const hasPhone = updatedLead.phone;
+      // Auto-submit lead — we always have phone from registration, so trigger on new areas
       const isNewArea = practiceArea !== "General Legal Inquiry" && !submittedAreas.has(practiceArea);
       const neverSubmitted = submittedAreas.size === 0;
-      if (hasPhone && (neverSubmitted || isNewArea)) {
+      if (neverSubmitted || isNewArea) {
         setSubmittedAreas(prev => new Set(prev).add(practiceArea));
-        // Build full chat transcript for the lawyer
         const allMessages = [...messages, { role: "user" as const, text: userMsg }, { role: "assistant" as const, text: botResponse }];
         const fullTranscript = allMessages.map(m => `${m.role === "user" ? "Client" : "AI Assistant"}: ${m.text}`).join("\n\n");
         try {
@@ -852,8 +903,8 @@ const ChatButton = () => {
               type: "chat_lead",
               data: {
                 phone: updatedLead.phone,
-                email: updatedLead.email || "Not provided",
-                name: updatedLead.name || "Not provided",
+                email: updatedLead.email,
+                name: updatedLead.name,
                 practiceArea,
                 conversationSummary: fullTranscript,
                 userMessage: userMsg,
@@ -861,22 +912,22 @@ const ChatButton = () => {
               },
             },
           });
-          
+
           // Construct the WhatsApp URL with current lead data
           const queryText = `Hi BNS Legal! I need a consultation.
-Name: ${updatedLead.name || "Not provided"}
+Name: ${updatedLead.name}
 Phone: ${updatedLead.phone}
-Email: ${updatedLead.email || "Not provided"}
+Email: ${updatedLead.email}
 Query: ${userMsg}`;
-          
+
           const encodedQuery = encodeURIComponent(queryText);
           const whatsappUrl = `https://api.whatsapp.com/send/?phone=919967713812&text=${encodedQuery}&type=phone_number&app_absent=0`;
-          
+
           setMessages((prev) => [
-            ...prev, 
-            { 
-              role: "bot", 
-              text: `Thanks for sharing your details! I've notified our team.\n\nFor faster assistance, you can click here to [forward your query directly to our WhatsApp](${whatsappUrl})` 
+            ...prev,
+            {
+              role: "bot",
+              text: `Thanks! I've notified our team with your details.\n\nFor faster assistance, you can click here to [forward your query directly to our WhatsApp](${whatsappUrl})`
             }
           ]);
 
@@ -895,6 +946,9 @@ Query: ${userMsg}`;
               botResponse,
               sessionId,
               model: LLM_CONFIG.model,
+              name: updatedLead.name,
+              email: updatedLead.email,
+              phone: updatedLead.phone,
             },
           },
         });
@@ -902,12 +956,16 @@ Query: ${userMsg}`;
         console.error("Failed to save chat query to database:", dbErr);
       }
     } catch (err) {
-      const errorMessage = "I apologize, but I'm having trouble processing your request. Please try again or contact us directly at bnslegal01@gmail.com or call 9223438655.";
+      const errorMessage = "I apologize, but I'm having trouble processing your request. Please try again or contact us directly at support.bnslegal@gmail.com or call 9223438655.";
       setMessages((prev) => [...prev, { role: "bot", text: errorMessage }]);
     } finally {
       setIsLoading(false);
     }
   };
+
+  // ── Pre-chat registration form styles ──
+  const inputClass = "w-full px-3 py-2.5 bg-white/5 border border-white/15 text-foreground text-sm font-body placeholder:text-muted-foreground focus:outline-none focus:border-primary transition-colors rounded-lg";
+  const errorClass = "text-red-400 text-[10px] mt-1";
 
   return (
     <>
@@ -919,6 +977,7 @@ Query: ${userMsg}`;
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             className="fixed bottom-24 right-6 z-50 w-80 md:w-96 backdrop-blur-xl bg-card/90 border border-white/10 shadow-2xl flex flex-col max-h-[70vh] rounded-2xl overflow-hidden"
           >
+            {/* Header */}
             <div className="px-4 py-3 border-b border-white/10 flex items-center justify-between bg-background/80 backdrop-blur-md">
               <div className="flex items-center gap-2">
                 <Scale className="w-4 h-4 text-primary" />
@@ -932,55 +991,110 @@ Query: ${userMsg}`;
               </button>
             </div>
 
-            <div className="flex-1 overflow-y-auto p-4 space-y-3 min-h-[200px]">
-              {messages.map((msg, i) => (
-                <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
-                  <div className={`max-w-[85%] px-3 py-2 text-sm whitespace-pre-line rounded ${
-                    msg.role === "user" 
-                      ? "bg-primary text-primary-foreground" 
-                      : "bg-secondary text-foreground"
-                  }`}
-                  dangerouslySetInnerHTML={{
-                    __html: msg.text.replace(
-                      /\[([^\]]+)\]\(([^)]+)\)/g,
-                      '<a href="$2" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline font-medium">$1</a>'
-                    )
-                  }}
-                  />
-                </div>
-              ))}
-              {isLoading && (
-                <div className="flex justify-start">
-                  <div className="bg-secondary text-foreground px-3 py-2 rounded text-sm">
-                    <div className="flex gap-1">
-                      <span className="w-2 h-2 bg-muted-foreground rounded-full animate-pulse"></span>
-                      <span className="w-2 h-2 bg-muted-foreground rounded-full animate-pulse delay-100"></span>
-                      <span className="w-2 h-2 bg-muted-foreground rounded-full animate-pulse delay-200"></span>
-                    </div>
+            {/* Body — Registration gate OR chat */}
+            {!userInfo ? (
+              /* ── Pre-chat registration ── */
+              <div className="flex-1 overflow-y-auto p-5">
+                <p className="font-display text-base font-semibold text-foreground mb-1">Before we begin</p>
+                <p className="font-body text-xs text-muted-foreground mb-5">Please share your details so our advocates can follow up with you.</p>
+                <form onSubmit={handleStartChat} className="space-y-3" noValidate>
+                  <div>
+                    <input
+                      type="text"
+                      placeholder="Full Name *"
+                      value={regFields.name}
+                      onChange={e => setRegFields(f => ({ ...f, name: e.target.value }))}
+                      className={inputClass}
+                    />
+                    {regErrors.name && <p className={errorClass}>{regErrors.name}</p>}
                   </div>
+                  <div>
+                    <input
+                      type="email"
+                      placeholder="Email Address *"
+                      value={regFields.email}
+                      onChange={e => setRegFields(f => ({ ...f, email: e.target.value }))}
+                      className={inputClass}
+                    />
+                    {regErrors.email && <p className={errorClass}>{regErrors.email}</p>}
+                  </div>
+                  <div>
+                    <input
+                      type="tel"
+                      placeholder="Phone Number (10 digits) *"
+                      value={regFields.phone}
+                      onChange={e => setRegFields(f => ({ ...f, phone: e.target.value }))}
+                      maxLength={15}
+                      className={inputClass}
+                    />
+                    {regErrors.phone && <p className={errorClass}>{regErrors.phone}</p>}
+                  </div>
+                  <button
+                    type="submit"
+                    disabled={regLoading}
+                    className="w-full py-2.5 bg-primary text-primary-foreground font-body font-semibold text-sm uppercase tracking-[0.12em] rounded-lg hover:bg-[hsl(var(--gold-light))] transition-colors disabled:opacity-50 disabled:cursor-not-allowed mt-1"
+                  >
+                    {regLoading ? "Please wait..." : "Start Chat →"}
+                  </button>
+                  <p className="font-body text-[10px] text-muted-foreground text-center pt-1">
+                    Your details are kept confidential and used only to connect you with our advocates.
+                  </p>
+                </form>
+              </div>
+            ) : (
+              /* ── Chat interface ── */
+              <>
+                <div className="flex-1 overflow-y-auto p-4 space-y-3 min-h-[200px]">
+                  {messages.map((msg, i) => (
+                    <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
+                      <div className={`max-w-[85%] px-3 py-2 text-sm whitespace-pre-line rounded ${
+                        msg.role === "user"
+                          ? "bg-primary text-primary-foreground"
+                          : "bg-secondary text-foreground"
+                      }`}
+                      dangerouslySetInnerHTML={{
+                        __html: msg.text.replace(
+                          /\[([^\]]+)\]\(([^)]+)\)/g,
+                          '<a href="$2" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline font-medium">$1</a>'
+                        )
+                      }}
+                      />
+                    </div>
+                  ))}
+                  {isLoading && (
+                    <div className="flex justify-start">
+                      <div className="bg-secondary text-foreground px-3 py-2 rounded text-sm">
+                        <div className="flex gap-1">
+                          <span className="w-2 h-2 bg-muted-foreground rounded-full animate-pulse"></span>
+                          <span className="w-2 h-2 bg-muted-foreground rounded-full animate-pulse delay-100"></span>
+                          <span className="w-2 h-2 bg-muted-foreground rounded-full animate-pulse delay-200"></span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  <div ref={messagesEndRef} />
                 </div>
-              )}
-              <div ref={messagesEndRef} />
-            </div>
 
-            <div className="p-3 border-t border-white/10 flex gap-2 bg-background/50 backdrop-blur-md">
-              <input
-                type="text"
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && !isLoading && handleSend()}
-                placeholder="Describe your legal matter..."
-                disabled={isLoading}
-                className="flex-1 px-3 py-2 bg-white/5 border border-white/10 text-foreground text-sm font-body placeholder:text-muted-foreground focus:outline-none focus:border-primary transition-colors disabled:opacity-50 rounded-lg"
-              />
-              <button 
-                onClick={handleSend} 
-                disabled={isLoading}
-                className="px-3 py-2 bg-primary text-primary-foreground hover:bg-[hsl(var(--gold-light))] transition-colors disabled:opacity-50 disabled:cursor-not-allowed rounded-lg"
-              >
-                <Send className="w-4 h-4" />
-              </button>
-            </div>
+                <div className="p-3 border-t border-white/10 flex gap-2 bg-background/50 backdrop-blur-md">
+                  <input
+                    type="text"
+                    value={input}
+                    onChange={(e) => setInput(e.target.value)}
+                    onKeyDown={(e) => e.key === "Enter" && !isLoading && handleSend()}
+                    placeholder="Describe your legal matter..."
+                    disabled={isLoading}
+                    className="flex-1 px-3 py-2 bg-white/5 border border-white/10 text-foreground text-sm font-body placeholder:text-muted-foreground focus:outline-none focus:border-primary transition-colors disabled:opacity-50 rounded-lg"
+                  />
+                  <button
+                    onClick={handleSend}
+                    disabled={isLoading}
+                    className="px-3 py-2 bg-primary text-primary-foreground hover:bg-[hsl(var(--gold-light))] transition-colors disabled:opacity-50 disabled:cursor-not-allowed rounded-lg"
+                  >
+                    <Send className="w-4 h-4" />
+                  </button>
+                </div>
+              </>
+            )}
           </motion.div>
         )}
       </AnimatePresence>
@@ -998,3 +1112,4 @@ Query: ${userMsg}`;
 };
 
 export default ChatButton;
+

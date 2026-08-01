@@ -162,7 +162,7 @@ const ContactSection = () => {
                 <Mail className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
                 <div>
                   <p className="font-body text-xs uppercase tracking-[0.2em] text-muted-foreground mb-1">Email</p>
-                  <a href="mailto:bnslegal01@gmail.com" className="font-body text-foreground text-sm hover:text-primary transition-colors">bnslegal01@gmail.com</a>
+                  <a href="mailto:support.bnslegal@gmail.com" className="font-body text-foreground text-sm hover:text-primary transition-colors">support.bnslegal@gmail.com</a>
                 </div>
               </div>
               {offices.map((office) => (

@@ -91,7 +91,7 @@ Hours: Mon – Sat: 9:00 AM – 7:00 PM | 24/7 Emergency Line Available
 CONTACT
 ═══════════════════════════════════════════
 Phone: 9223438655 / 9967713812 / 9220473363
-Email: bnslegal01@gmail.com
+Email: support.bnslegal@gmail.com
 
 ═══════════════════════════════════════════
 CONSULTATION FUNNEL — YOUR CORE STRATEGY
