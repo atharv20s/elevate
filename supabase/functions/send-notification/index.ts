@@ -149,7 +149,7 @@ async function sendEmailViaResend(subject: string, body: string): Promise<boolea
 const advocateMap: Record<string, { name: string; phone: string }> = {
   "Redevelopment / Co-operative Society": { name: "Mr. Sandeep Shukla", phone: "9220473363" },
   "Family & Matrimonial": { name: "Ms. Neelam S. Shukla", phone: "9479256501" },
-  "Civil / Property": { name: "Mr. B. N. Shukla", phone: "9223438655" },
+  "Civil / Property": { name: "Mr. Sandeep Shukla", phone: "9220473363" },
   "Criminal": { name: "Mr. Sandeep Shukla", phone: "9220473363" },
   "Consumer Protection": { name: "Mr. Sandeep Shukla", phone: "9220473363" },
   "Motor Accident / Insurance": { name: "Mr. Vinayak Shukla", phone: "8655890872" },
@@ -160,7 +160,7 @@ const advocateMap: Record<string, { name: string; phone: string }> = {
   "Cyber Crime": { name: "Mr. Sandeep Shukla", phone: "9220473363" },
   "Tax & Revenue": { name: "Mr. Deepak Shukla", phone: "9967713812" },
   "Constitutional & Public Law": { name: "Mr. Deepak Shukla", phone: "9967713812" },
-  "Banking & Finance": { name: "Mr. B. N. Shukla", phone: "9223438655" },
+  "Banking & Finance": { name: "Mr. Deepak Shukla", phone: "9967713812" },
   "Senior Citizen": { name: "Ms. Neelam S. Shukla", phone: "9479256501" },
   "Matrimonial Property": { name: "Ms. Neelam S. Shukla", phone: "9479256501" },
 };
@@ -212,7 +212,7 @@ serve(async (req) => {
       }
 
       const clientName = `${data.firstName || ''} ${data.lastName || ''}`.trim() || "Visitor";
-      subject = `TASK TYPE- CONSULTATION REQUEST - ${clientName}`;
+      subject = `HELP TYPE- CONSULTATION REQUEST - ${clientName}`;
       body = `
 <h2>New Consultation Request — BNS Legal Website</h2>
 <p><strong>Name:</strong> ${clientName}</p>
@@ -241,7 +241,7 @@ serve(async (req) => {
       }
 
       const clientName = data.fullName || "Applicant";
-      subject = `TASK TYPE- INTERN APPLICATION - ${clientName}`;
+      subject = `HELP TYPE- INTERNSHIP - ${clientName}`;
       body = `
 <h2>New Internship Application — BNS Legal Website</h2>
 <p><strong>Name:</strong> ${clientName}</p>
@@ -292,7 +292,7 @@ serve(async (req) => {
       const advocate = getAdvocateInfo(data.practiceArea);
       const clientName = data.name || "Visitor";
 
-      subject = `TASK TYPE- AI CHAT - ${clientName}`;
+      subject = `HELP TYPE- AI CHAT - ${clientName} - ${advocate.name}`;
 
       body = `
 <h2>🔔 New Consultation Lead — BNS Legal AI Chatbot</h2>
@@ -341,7 +341,8 @@ serve(async (req) => {
       // Only email if it looks like a real inquiry
       if (data.shouldEmail) {
         const clientName = data.name || "Visitor";
-        subject = `TASK TYPE- AI CHAT - ${clientName}`;
+        const chatAdvocate = getAdvocateInfo(data.practiceArea || "General Legal Inquiry");
+        subject = `HELP TYPE- AI CHAT - ${clientName} - ${chatAdvocate.name}`;
         body = `
 <h2>New Chat Query — BNS Legal Website</h2>
 <p><strong>Client Name:</strong> ${clientName}</p>
