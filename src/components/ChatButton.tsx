@@ -874,16 +874,16 @@ const ChatButton = () => {
     const allText = messages.map(m => m.text).join(" ") + " " + userMsg;
     const practiceArea = detectPracticeArea(userMsg, allText);
 
-    // Accumulate lead info — always start from registered userInfo
+    // Accumulate lead info — always start from registered userInfo, never override name
     const updatedLead = {
       name: userInfo.name,
       email: userInfo.email,
       phone: userInfo.phone,
       ...collectedLead,
     };
+    // Only supplement phone/email if user typed them in chat; never override name
     if (phone) updatedLead.phone = phone;
     if (email) updatedLead.email = email;
-    if (name) updatedLead.name = name;
     setCollectedLead(updatedLead);
 
     try {

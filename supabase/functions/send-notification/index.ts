@@ -212,7 +212,7 @@ serve(async (req) => {
       }
 
       const clientName = `${data.firstName || ''} ${data.lastName || ''}`.trim() || "Visitor";
-      subject = `[TASK TYPE- CONSULTATION REQUEST] - ${clientName}`;
+      subject = `TASK TYPE- CONSULTATION REQUEST - ${clientName}`;
       body = `
 <h2>New Consultation Request — BNS Legal Website</h2>
 <p><strong>Name:</strong> ${clientName}</p>
@@ -241,7 +241,7 @@ serve(async (req) => {
       }
 
       const clientName = data.fullName || "Applicant";
-      subject = `[TASK TYPE- INTERN APPLICATION] - ${clientName}`;
+      subject = `TASK TYPE- INTERN APPLICATION - ${clientName}`;
       body = `
 <h2>New Internship Application — BNS Legal Website</h2>
 <p><strong>Name:</strong> ${clientName}</p>
@@ -292,7 +292,7 @@ serve(async (req) => {
       const advocate = getAdvocateInfo(data.practiceArea);
       const clientName = data.name || "Visitor";
 
-      subject = `[TASK TYPE- AI CHAT] - ${clientName}`;
+      subject = `TASK TYPE- AI CHAT - ${clientName}`;
 
       body = `
 <h2>🔔 New Consultation Lead — BNS Legal AI Chatbot</h2>
@@ -341,7 +341,7 @@ serve(async (req) => {
       // Only email if it looks like a real inquiry
       if (data.shouldEmail) {
         const clientName = data.name || "Visitor";
-        subject = `[TASK TYPE- AI CHAT] - ${clientName}`;
+        subject = `TASK TYPE- AI CHAT - ${clientName}`;
         body = `
 <h2>New Chat Query — BNS Legal Website</h2>
 <p><strong>Client Name:</strong> ${clientName}</p>
