@@ -6,6 +6,8 @@ interface ScrollStoryWrapperProps {
   animationType?: "fade-up" | "slide-left" | "slide-right" | "zoom" | "reveal-up";
   className?: string;
   id?: string;
+  chapter?: string;
+  chapterTitle?: string;
 }
 
 const ScrollStoryWrapper = ({
@@ -13,6 +15,8 @@ const ScrollStoryWrapper = ({
   animationType = "fade-up",
   className = "",
   id,
+  chapter,
+  chapterTitle,
 }: ScrollStoryWrapperProps) => {
   const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
@@ -51,9 +55,15 @@ const ScrollStoryWrapper = ({
   };
 
   return (
-    <div ref={ref} className={`relative overflow-hidden ${className}`} id={id}>
+    <section
+      ref={ref}
+      className={`relative overflow-hidden ${className}`}
+      id={id}
+      aria-label={chapter && chapterTitle ? `${chapter}: ${chapterTitle}` : chapterTitle || id}
+    >
       {/* Parallax background layer */}
       <motion.div
+        aria-hidden="true"
         className="absolute inset-0 pointer-events-none z-0"
         style={{ y: bgY }}
       >
@@ -70,7 +80,7 @@ const ScrollStoryWrapper = ({
       >
         {children}
       </motion.div>
-    </div>
+    </section>
   );
 };
 

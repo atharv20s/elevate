@@ -54,9 +54,15 @@ const InternshipSection = () => {
   };
 
   return (
-    <section id="internship" ref={ref} className="py-24 md:py-32" style={{
-      background: "radial-gradient(ellipse at 50% 30%, #1a202c 0%, #0f172a 50%, #020617 100%)",
-    }}>
+    <section
+      id="internship"
+      aria-label="Apply for internship at BNS Legal"
+      ref={ref}
+      className="py-24 md:py-32"
+      style={{
+        background: "radial-gradient(ellipse at 50% 30%, #1a202c 0%, #0f172a 50%, #020617 100%)",
+      }}
+    >
       <div className="max-w-4xl mx-auto px-6">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -96,38 +102,59 @@ const InternshipSection = () => {
           ) : (
             <>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <input name="fullName" type="text" placeholder="Full Name" required
-                  className="w-full px-4 py-3 border border-border bg-card text-card-foreground font-body text-sm placeholder:text-muted-foreground focus:outline-none focus:border-primary transition-colors" />
-                <input name="email" type="email" placeholder="Email Address" required
-                  className="w-full px-4 py-3 border border-border bg-card text-card-foreground font-body text-sm placeholder:text-muted-foreground focus:outline-none focus:border-primary transition-colors" />
+                <div>
+                  <label htmlFor="intern-fullName" className="sr-only">Full Name</label>
+                  <input id="intern-fullName" name="fullName" type="text" placeholder="Full Name" required
+                    className="w-full px-4 py-3 border border-border bg-card text-card-foreground font-body text-sm placeholder:text-muted-foreground focus:outline-none focus:border-primary transition-colors" />
+                </div>
+                <div>
+                  <label htmlFor="intern-email" className="sr-only">Email Address</label>
+                  <input id="intern-email" name="email" type="email" placeholder="Email Address" required
+                    className="w-full px-4 py-3 border border-border bg-card text-card-foreground font-body text-sm placeholder:text-muted-foreground focus:outline-none focus:border-primary transition-colors" />
+                </div>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <input name="phone" type="tel" placeholder="Phone Number" required
-                  className="w-full px-4 py-3 border border-border bg-card text-card-foreground font-body text-sm placeholder:text-muted-foreground focus:outline-none focus:border-primary transition-colors" />
-                <input name="college" type="text" placeholder="College / University" required
-                  className="w-full px-4 py-3 border border-border bg-card text-card-foreground font-body text-sm placeholder:text-muted-foreground focus:outline-none focus:border-primary transition-colors" />
+                <div>
+                  <label htmlFor="intern-phone" className="sr-only">Phone Number</label>
+                  <input id="intern-phone" name="phone" type="tel" placeholder="Phone Number" required
+                    className="w-full px-4 py-3 border border-border bg-card text-card-foreground font-body text-sm placeholder:text-muted-foreground focus:outline-none focus:border-primary transition-colors" />
+                </div>
+                <div>
+                  <label htmlFor="intern-college" className="sr-only">College or University</label>
+                  <input id="intern-college" name="college" type="text" placeholder="College / University" required
+                    className="w-full px-4 py-3 border border-border bg-card text-card-foreground font-body text-sm placeholder:text-muted-foreground focus:outline-none focus:border-primary transition-colors" />
+                </div>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <select name="yearOfStudy" required
-                  className="w-full px-4 py-3 border border-border bg-card text-card-foreground font-body text-sm focus:outline-none focus:border-primary transition-colors">
-                  <option value="">Year of Study</option>
-                  <option value="1st Year">1st Year</option>
-                  <option value="2nd Year">2nd Year</option>
-                  <option value="3rd Year">3rd Year</option>
-                  <option value="4th Year">4th Year</option>
-                  <option value="5th Year">5th Year</option>
-                  <option value="Graduate">Graduate</option>
-                </select>
-                <select name="areaOfInterest" required
-                  className="w-full px-4 py-3 border border-border bg-card text-card-foreground font-body text-sm focus:outline-none focus:border-primary transition-colors">
-                  <option value="">Area of Interest</option>
-                  {areasOfInterest.map((area) => (
-                    <option key={area} value={area}>{area}</option>
-                  ))}
-                </select>
+                <div>
+                  <label htmlFor="intern-yearOfStudy" className="sr-only">Year of Study</label>
+                  <select id="intern-yearOfStudy" name="yearOfStudy" required
+                    className="w-full px-4 py-3 border border-border bg-card text-card-foreground font-body text-sm focus:outline-none focus:border-primary transition-colors">
+                    <option value="">Year of Study</option>
+                    <option value="1st Year">1st Year</option>
+                    <option value="2nd Year">2nd Year</option>
+                    <option value="3rd Year">3rd Year</option>
+                    <option value="4th Year">4th Year</option>
+                    <option value="5th Year">5th Year</option>
+                    <option value="Graduate">Graduate</option>
+                  </select>
+                </div>
+                <div>
+                  <label htmlFor="intern-areaOfInterest" className="sr-only">Area of Interest</label>
+                  <select id="intern-areaOfInterest" name="areaOfInterest" required
+                    className="w-full px-4 py-3 border border-border bg-card text-card-foreground font-body text-sm focus:outline-none focus:border-primary transition-colors">
+                    <option value="">Area of Interest</option>
+                    {areasOfInterest.map((area) => (
+                      <option key={area} value={area}>{area}</option>
+                    ))}
+                  </select>
+                </div>
               </div>
-              <textarea name="message" rows={4} placeholder="Why do you want to intern at BNS Legal? (Optional)"
-                className="w-full px-4 py-3 border border-border bg-card text-card-foreground font-body text-sm placeholder:text-muted-foreground focus:outline-none focus:border-primary transition-colors resize-none" />
+              <div>
+                <label htmlFor="intern-message" className="sr-only">Why do you want to intern at BNS Legal</label>
+                <textarea id="intern-message" name="message" rows={4} placeholder="Why do you want to intern at BNS Legal? (Optional)"
+                  className="w-full px-4 py-3 border border-border bg-card text-card-foreground font-body text-sm placeholder:text-muted-foreground focus:outline-none focus:border-primary transition-colors resize-none" />
+              </div>
               <button type="submit" disabled={loading}
                 className="w-full py-3.5 bg-primary text-primary-foreground font-body font-semibold text-sm uppercase tracking-[0.15em] transition-all duration-300 hover:bg-[hsl(var(--gold-light))] disabled:opacity-50">
                 {loading ? "Submitting..." : "Submit Application"}

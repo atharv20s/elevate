@@ -108,7 +108,7 @@ const ReviewsSection = () => {
                       {review.name.charAt(0)}
                     </div>
                     <div>
-                      <h4 className="font-display font-semibold text-foreground text-sm">{review.name}</h4>
+                      <p className="font-display font-semibold text-foreground text-sm">{review.name}</p>
                       <p className="font-mono text-[10px] text-muted-foreground uppercase tracking-widest">{review.reviewsCount}</p>
                     </div>
                   </div>

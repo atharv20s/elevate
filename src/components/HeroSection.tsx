@@ -14,13 +14,15 @@ const HeroSection = () => {
   return (
     <section
       ref={ref}
+      id="hero"
+      aria-label="BNS Legal – Hero introduction"
       className="relative min-h-screen flex items-center overflow-hidden pt-20 px-6 md:px-0"
       style={{
         background: "radial-gradient(circle at 70% 30%, #1a202c 0%, #0f172a 60%, #020617 100%)",
       }}
     >
       {/* Studio backdrop mesh layers */}
-      <div className="absolute inset-0 z-0">
+      <div className="absolute inset-0 z-0" aria-hidden="true">
         <div
           className="absolute inset-0"
           style={{
@@ -42,6 +44,7 @@ const HeroSection = () => {
 
       {/* Subtle left side overlay for text contrast only */}
       <div
+        aria-hidden="true"
         className="absolute left-0 top-0 w-full md:w-[40%] h-full z-10 pointer-events-none"
         style={{
           background: "linear-gradient(to right, #020617 0%, rgba(2,6,23,0.7) 60%, transparent 100%)",

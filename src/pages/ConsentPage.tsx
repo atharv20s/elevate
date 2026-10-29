@@ -37,9 +37,9 @@ const ConsentPage = ({ onConsentAccepted }: ConsentPageProps) => {
             className="space-y-6 mb-8"
           >
             <div>
-              <h2 className="font-display text-3xl font-bold text-foreground mb-4">
+              <h1 className="font-display text-3xl font-bold text-foreground mb-4">
                 Welcome to BNS Legal
-              </h2>
+              </h1>
               <div className="w-16 h-[2px] bg-gradient-to-r from-primary to-primary/40" />
             </div>
 

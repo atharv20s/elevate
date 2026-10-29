@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  sitemap.xml – BNS Legal (https://bnslegal.in)
+
+  Note:
+  - Only real routed page URLs are listed. Fragment URLs (e.g. /#firm)
+    are not separately indexed by Google and are excluded.
+  - Google ignores <changefreq> and <priority>; they are retained
+    for compatibility with other search engines.
+  - Submit at: https://search.google.com/search-console → Sitemaps
+-->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+
+  <!-- Homepage: Hero, Firm overview, Client reviews -->
+  <url>
+    <loc>https://bnslegal.in/</loc>
+    <lastmod>2026-10-28</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>1.0</priority>
+  </url>
+
+  <!-- Practice Areas page: Practice areas, Team, Internship -->
+  <url>
+    <loc>https://bnslegal.in/practice-areas</loc>
+    <lastmod>2026-10-28</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- Contact page: Contact form, Office addresses, Hours -->
+  <url>
+    <loc>https://bnslegal.in/contact</loc>
+    <lastmod>2026-10-28</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+</urlset>

@@ -1,14 +1,18 @@
-User-agent: Googlebot
-Allow: /
+# -------------------------------------------------------
+# robots.txt – BNS Legal (https://bnslegal.in)
+# Note: robots.txt is crawler guidance only; it cannot
+# restrict access. Sensitive resources must be protected
+# by server-side access controls.
+# -------------------------------------------------------
 
-User-agent: Bingbot
-Allow: /
-
-User-agent: Twitterbot
-Allow: /
-
-User-agent: facebookexternalhit
-Allow: /
-
+# Single wildcard group covers all crawlers.
+# More specific named groups would override this for
+# those bots, so all rules are here in one place.
 User-agent: *
 Allow: /
+Disallow: /api/
+Disallow: /.env
+Disallow: /node_modules/
+
+# Sitemap location
+Sitemap: https://bnslegal.in/sitemap.xml
